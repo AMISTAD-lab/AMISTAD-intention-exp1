@@ -12,6 +12,7 @@ import numpy as np
 import random
 import helpSimulate as hsm
 import magicVariables as mv
+from classLine import *
 
 class Character(metaclass = ABCMeta):
 
@@ -50,8 +51,6 @@ class Character(metaclass = ABCMeta):
 
     def updateRotPosSpeed(self):
         # update pos, rot
-        if (self in hsm.preyList + hsm.predatorList) == False:
-            print("UHHH OHHHH GUYS")
         self.pos = p.getBasePositionAndOrientation(self.objID)[0]
         p.resetBasePositionAndOrientation(self.objID, self.pos, self.rot)
         # update speed 
@@ -112,7 +111,7 @@ class Character(metaclass = ABCMeta):
             predatorsHit: a list of [objID, objPos] of the predators in view
             foodHit: a list of [objID, objPos] of the food in view
         """
-        maxGap = min(mv.PREDATOR_SIZE, mv.PREY_SIZE, mv.FOOD_SIZE)/2
+        maxGap = min(mv.PREDATOR_SIZE, mv.PREY_SIZE, mv.FOOD_SIZE)
         objHitList = self.look(dist, fieldOfViewAngle, maxGap)
         preyHit = []
         predatorsHit = []
@@ -155,6 +154,7 @@ class Character(metaclass = ABCMeta):
         numRayCasts = math.ceil((dist) * (viewAngle) / (maxGap)) + 1
         startPosList = [center]*numRayCasts
         endPosList = []
+        viewAngle = maxGap * (numRayCasts - 1) / dist # because numRayCasts is rounded up, original view angle has likely changed
         angle = z_rot - viewAngle / 2
         for i in range(numRayCasts):
             x = center[0] + math.cos(z_rot + angle) * dist
@@ -163,6 +163,11 @@ class Character(metaclass = ABCMeta):
             endPosList.append([x,y,z])
             angle += viewAngle / (numRayCasts - 1)
         rayList = p.rayTestBatch(startPosList, endPosList)
+        
+        newLines = [Line(startPosList[i], endPosList[i]) for i in range(numRayCasts) if i % 3 == 0]
+        for line in newLines:
+            hsm.addToLineList(line)
+
         hitObjList = []
         for rayOutput in rayList:
             if rayOutput[0] != -1 and rayOutput[0] not in hitObjList:

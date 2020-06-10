@@ -11,7 +11,7 @@ import numpy.random as npr
 from classCharacter import *
 import algorithms as alg
 from classLine import *
-
+#import test as t
 
 class Predator(Character):
     """A class for the predator"""
@@ -63,14 +63,15 @@ class Predator(Character):
             inChaseRange = alg.calcDistance(self.pos, mv.TERRAIN_CENTER) < mv.CHASE_RADIUS
             if inChaseRange and preyList:
                 self.targetPrey(preyList)
+                print("targeting prey")
             # otherwise, pick weighted random speed and direction 
             else:
+                self.lastTargetedPrey = None
                 yawAndAngleArray = alg.genRandFromContinuousDist(alg.probPredDirection, 0, mv.FULL_CIRCLE, mv.PREDATOR_DECISION_BIN_NUM, self.objID)
+                #t.makeAngleVTimePlot(yawAndAngleArray[2], yawAndAngleArray[3], yawAndAngleArray[2][1] - yawAndAngleArray[2][0])
                 self.speed = alg.genCharSpeed(yawAndAngleArray, self.objID, mv.PREDATOR_MAX_SPEED, mv.PREDATOR_TIRED_SPEED, self.stamina, mv.PREDATOR_TIRED_STAMINA, mv.PREDATOR_DECISION_CURRENT_SPEED_FACTOR) # pass in this array so method knows 
+                print("calculated speed is", self.speed)
                 self.rot = super().getQuanternionFromYawDegree(yawAndAngleArray[0])
-                print("bins are", yawAndAngleArray[2])
-                print("probs are", yawAndAngleArray[3])
-                print("chosen angle is", yawAndAngleArray[0])
     
     def resetTarget(self):
         """Each frame, reset Predator's target by making its previously targeted prey no longer targeted
@@ -78,7 +79,7 @@ class Predator(Character):
         if self.lastTargetedPrey:
             lastPrey = hsm.objIDToObject[self.lastTargetedPrey]
             lastPrey.isTargeted = False
-            self.lastTargetedPrey = None
+            #self.lastTargetedPrey = None
 
     def targetPrey(self, preyList):
         """Inputs:
@@ -105,6 +106,7 @@ class Predator(Character):
     def pickNewTarget(self, preyList):
         """Returns a new prey ID for the predator to target. Weighted probabilities are 
         dependent upon distance to each prey."""
+        print("picking a new target")
         probList = []
         preyIDList = [prey[0] for prey in preyList]
         for prey in preyList:
@@ -117,15 +119,16 @@ class Predator(Character):
         return npr.choice(preyIDList, size=1, p=probList)[0]
 
     def lockOntoPrey(self, preyPos):   
+        print("locking onto prey")
         # change the yaw to face the prey     
         yawInDegrees = alg.calcAngleTo(self.pos, preyPos)
         self.rot = super().getQuanternionFromYawDegree(yawInDegrees)
 
         #go at max possible speed after chosen prey
         if self.stamina < mv.PREDATOR_TIRED_STAMINA:
-            self.speed = mv.PREDATOR_TIRED_SPEED
+            self.speed = mv.PREDATOR_TARGET_SPEED/3.0
         else:
-            self.speed = mv.PREDATOR_MAX_SPEED
+            self.speed = mv.PREDATOR_TARGET_SPEED
                 
         # make a vision line going towards prey
         newLine = Line(self.pos, preyPos)

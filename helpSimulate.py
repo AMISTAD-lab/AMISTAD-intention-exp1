@@ -124,7 +124,7 @@ def createSeedListFromFile(filename):
         "targetPredFactor" : 1.75,
         "updateFrameRate" : 1.0,
         "preyDecisionCenterFactor" : 0.1,
-        "predatorDecisionCenterFactor" : 10.0,
+        "predatorDecisionCenterFactor" : 0.1,
         "predatorDecisionCurrentYawFactor" : 3.5,
         "predatorDecisionCurrentSpeedFactor" : 0.5
     }
@@ -274,7 +274,7 @@ def spawnPrey(count):
     for i in range(count):
         pos = mv.PREY_SPAWN_ALG(mv.PREY_SIZE/2)
         #take this out!!!!!
-        pos = [-9, +9, 0.5]
+        #pos = [-9, +9, 0.5]
         preyList.append(Prey(pos))
 
 def spawnPredators(count):
@@ -282,7 +282,7 @@ def spawnPredators(count):
     for i in range(count):
         pos = mv.PREDATOR_SPAWN_ALG(mv.PREDATOR_SIZE/2)
         #take this out!!!!!
-        pos = [-2, +2, 1]
+        #pos = [-2, +2, 1]
         predatorList.append(Predator(pos))
 
 def spawnFood(count):

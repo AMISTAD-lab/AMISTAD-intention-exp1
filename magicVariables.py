@@ -147,6 +147,8 @@ PREDATOR_DECISION_CURRENT_YAW_FACTOR = 0.5
 PREDATOR_DECISION_CENTER_FACTOR = 0.1  # should adjust later!!!
 PREDATOR_DECISION_CURRENT_SPEED_FACTOR = 0.5
 
+PREDATOR_TARGET_SPEED = 20
+
 ###################
 ## REASSIGNMENTS ##
 ###################
@@ -271,3 +273,6 @@ def redefineMagicVariables(preferences):
 
     global PREDATOR_DECISION_CURRENT_SPEED_FACTOR
     PREDATOR_DECISION_CURRENT_SPEED_FACTOR = preferences["predatorDecisionCurrentSpeedFactor"]
+
+    global PREDATOR_TARGET_SPEED 
+    PREDATOR_TARGET_SPEED = preferences["predatorTargetSpeed"]

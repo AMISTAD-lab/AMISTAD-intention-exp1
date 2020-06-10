@@ -130,11 +130,12 @@ def addDistFromCenterProb(direction, pos, predatorList, factor, activationRadius
         return 0
     # Otherwise, calculate if we are inside the activation radius.
     distToCenter = calcDistance(pos, mv.TERRAIN_CENTER)
-    if distToCenter < activationRadius:
-        return 0
-    # if not inside activation radius, return probability weighted on distance.
-    angleToCenter = calcDistance(pos, mv.TERRAIN_CENTER)
-    return factor * distToCenter * angleWeight(angleToCenter, direction) # i suggest dividing by some radius
+    #if distToCenter < activationRadius:
+        #return 0
+    # weight depends on distance to center. Increases according to a power function as we move away from center.
+    distanceFactor = (distToCenter/(mv.TERRAIN_RADIUS + 0.0))**4
+    angleToCenter = calcAngleTo(pos, mv.TERRAIN_CENTER)
+    return factor * distanceFactor * angleWeight(angleToCenter, direction) # i suggest dividing by some radius
 
 
 def addPredProb(direction, charID, pos, predList):
@@ -217,7 +218,9 @@ def genCharSpeed(yawArray, charID, maxSpeed, tiredSpeed, stamina, tiredStamina, 
     index = yawArray[2].index(yawArray[1])
     normalizedProb = normalizedYaws[index]
     speedAccordingToProb = maxSpeed * normalizedProb
+    print("speed according to prob is", speedAccordingToProb)
     currentSpeed = hsm.objIDToObject[charID].speed
+    print("currentSpeed is", currentSpeed)
     weightedProbSpeed = currentSpeedWeight * currentSpeed + (1 - currentSpeedWeight) * speedAccordingToProb
     # 2. pick from a normal distribution with this angle's probability at the center
     # get the normalized probability

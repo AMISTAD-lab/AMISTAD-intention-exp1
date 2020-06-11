@@ -63,15 +63,14 @@ class Predator(Character):
             inChaseRange = alg.calcDistance(self.pos, mv.TERRAIN_CENTER) < mv.CHASE_RADIUS
             if inChaseRange and preyList:
                 self.targetPrey(preyList)
-                print("targeting prey")
             # otherwise, pick weighted random speed and direction 
             else:
                 self.lastTargetedPrey = None
                 yawAndAngleArray = alg.genRandFromContinuousDist(alg.probPredDirection, 0, mv.FULL_CIRCLE, mv.PREDATOR_DECISION_BIN_NUM, self.objID)
                 #t.makeAngleVTimePlot(yawAndAngleArray[2], yawAndAngleArray[3], yawAndAngleArray[2][1] - yawAndAngleArray[2][0])
                 self.speed = alg.genCharSpeed(yawAndAngleArray, self.objID, mv.PREDATOR_MAX_SPEED, mv.PREDATOR_TIRED_SPEED, self.stamina, mv.PREDATOR_TIRED_STAMINA, mv.PREDATOR_DECISION_CURRENT_SPEED_FACTOR) # pass in this array so method knows 
-                print("calculated speed is", self.speed)
-                self.rot = super().getQuanternionFromYawDegree(yawAndAngleArray[0])
+                self.yaw = m.radians(yawAndAngleArray[0])#super().getQuanternionFromYawDegree(yawAndAngleArray[0])
+
     
     def resetTarget(self):
         """Each frame, reset Predator's target by making its previously targeted prey no longer targeted
@@ -106,7 +105,6 @@ class Predator(Character):
     def pickNewTarget(self, preyList):
         """Returns a new prey ID for the predator to target. Weighted probabilities are 
         dependent upon distance to each prey."""
-        print("picking a new target")
         probList = []
         preyIDList = [prey[0] for prey in preyList]
         for prey in preyList:
@@ -119,10 +117,9 @@ class Predator(Character):
         return npr.choice(preyIDList, size=1, p=probList)[0]
 
     def lockOntoPrey(self, preyPos):   
-        print("locking onto prey")
         # change the yaw to face the prey     
         yawInDegrees = alg.calcAngleTo(self.pos, preyPos)
-        self.rot = super().getQuanternionFromYawDegree(yawInDegrees)
+        self.yaw = m.radians(yawInDegrees)
 
         #go at max possible speed after chosen prey
         if self.stamina < mv.PREDATOR_TIRED_STAMINA:

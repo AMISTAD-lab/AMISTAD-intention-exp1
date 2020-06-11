@@ -1,4 +1,6 @@
 import magicVariables as mv
+import algorithms as alg
+import math as m
 
 script = [[]]   # list of c# lines
 maxID = [0]     # maximum id of the objects, allows us to 
@@ -24,12 +26,22 @@ def vf(vector):
     vStr = vStr[:-1] + ")"
     return vStr
 
-def qf(quaternion):
-    """formats a quaternion for unity c# code
+def posf(vector):
+    """USELESS BUT ALREADY IMPLEMENTED, SAME AS VF"""
+    #90 degree rotation around z axis, [x,y] -> [-y, x]
+    #vector = [-vector[1], vector[0], vector[2]]
+    return vf(vector)
+
+def qf(yaw):
+    """formats a yaw into quaternion for unity c# code
     input:
-        quaternion: tuple of numbers
+        yaw: an angle in radians around the vertical axis
     output:
         qStr: string"""
+    
+    #get quat from yaw (reflect over x/y axis)
+    quaternion = alg.quatFromYawRad(m.pi/2 - yaw)
+    
     qStr = "new Quaternion(" 
     for i in [0,2,1,3]:
         qStr += str(quaternion[i]) + "f,"

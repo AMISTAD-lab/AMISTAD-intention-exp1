@@ -84,26 +84,6 @@ def createSeedListFromFile(filename):
     seedFile.close()
     lineList = [x.strip("\n") for x in lineList]
     lineList = lineList[:-1] # crop out extra line in file (hacky ik)
-    #standardSeed = {
-    #    "targetedAware" : True,
-    #    "proximityAware" : True,
-    #    "preyStartCount" : 15,
-    #    "predStartCount" : 3,
-    #    "foodStartCount" : 4,
-    #    "foodMaxCount" : 15,
-    #    "foodSpawnRate" : 100,
-    #    "terrainSize" : 50,
-    #    "preySightDistance" : 20,
-    #    "predSightDistance" : 20,
-    #    "predSightAngle" : 100,
-    #    "preySpeed" : 60,
-    #    "predSpeed" : 20,
-    #    "currentYawFactor" : 3.0,
-    #    "regPredFactor" : 1.0,
-    #    "targetPredFactor" : 12.0,
-    #    "updateFrameRate" : 4.0,
-    #    "probFromPrevWeight" : 1
-    #}
 
     standardSeed = {
         "targetedAware" : True,
@@ -258,8 +238,7 @@ def nextStep():
         if frameCount % mv.FRAME_RATIO == 0:
             hsc.script.append([])
             for obj in preyList + predatorList + foodList:
-                #objPos, objRot = p.getBasePositionAndOrientation(obj.objID)
-                hu.unityUpdateObj(obj.objID, obj.pos, obj.rot)
+                hu.unityUpdateObj(obj.objID, obj.pos, obj.yaw)
             #global sightLineList
             global oldLineList
             for i in range(len(oldLineList)):
@@ -273,16 +252,12 @@ def spawnPrey(count):
     """spawns 'count' number of prey"""
     for i in range(count):
         pos = mv.PREY_SPAWN_ALG(mv.PREY_SIZE/2)
-        #take this out!!!!!
-        #pos = [-9, +9, 0.5]
         preyList.append(Prey(pos))
 
 def spawnPredators(count):
     """spawns 'count' number of predators"""
     for i in range(count):
         pos = mv.PREDATOR_SPAWN_ALG(mv.PREDATOR_SIZE/2)
-        #take this out!!!!!
-        #pos = [-2, +2, 1]
         predatorList.append(Predator(pos))
 
 def spawnFood(count):
@@ -308,7 +283,7 @@ def updateFood():
         if frameCount % mv.FOOD_SPAWN_RATE == 0:
             spawnFood(1)
 
-def create(prefab, filename, objPos, objRot, scale=1):
+def create(prefab, filename, objPos, objYaw, scale=1):
     """creates an object in both pybullet and unity
     input:
         prefab: string
@@ -319,11 +294,12 @@ def create(prefab, filename, objPos, objRot, scale=1):
     output:
         objID: the ID of the created pybullet object
     """
+    objRot = alg.quatFromYawRad(objYaw)
     if prefab == "food":
         objID = p.loadURDF(filename, objPos, objRot, useFixedBase=1, globalScaling=scale)
     else:
         objID = p.loadURDF(filename, objPos, objRot, globalScaling=scale)
-    hu.unitySpawn(objID, prefab, objPos, objRot, scale)
+    hu.unitySpawn(objID, prefab, objPos, objYaw, scale)
     return objID
 
 def destroy(objID):

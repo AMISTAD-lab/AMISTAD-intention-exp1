@@ -51,7 +51,7 @@ PREDATOR_INCREMENT_HUNGER = PREDATOR_MAX_HUNGER / 2
 PREY_DECREMENT_HUNGER = PREY_MAX_HUNGER/2000 # amount by which to decrement prey's hunger each step of simulation.
 PREDATOR_DECREMENT_HUNGER = PREDATOR_MAX_HUNGER/3000
 
-PROB_KEEP_TARGET = 0.9 # the probability of sticking with the current targeted prey instead of choosing again (includes current)
+PROB_KEEP_TARGET = 0.95 # the probability of sticking with the current targeted prey instead of choosing again (includes current)
 
 # magic variables applying to prey's direction method
 STD_DEV_CIRCLE = FULL_CIRCLE/6.0

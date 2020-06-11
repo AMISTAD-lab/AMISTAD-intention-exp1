@@ -91,7 +91,7 @@ class Prey(Character):
             #minAngle = currentAngleDeg - mv.HALF_CIRCLE
             #maxAngle = currentAngleDeg + mv.HALF_CIRCLE
             yawAndAngleArray = alg.genRandFromContinuousDist(alg.probPreyDirection, 0, mv.FULL_CIRCLE, mv.PREY_DECISION_BIN_NUM, self.objID, observationList[1], observationList[2])
-            self.rot = super().getQuanternionFromYawDegree(yawAndAngleArray[0])#p.getQuaternionFromEuler([0.0, 0.0, m.radians(yawAndAngleArray[0])]) # yawAndAngleArray[0] is [yaw, list of yaws, list of probs]
+            self.yaw = m.radians(yawAndAngleArray[0])#p.getQuaternionFromEuler([0.0, 0.0, m.radians(yawAndAngleArray[0])]) # yawAndAngleArray[0] is [yaw, list of yaws, list of probs]
             # make speed equal to the maximum possible (corrected for stamina) if prey is targeted.
             if self.isTargeted:
                 if self.stamina < mv.PREY_TIRED_STAMINA:

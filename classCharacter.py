@@ -13,6 +13,7 @@ import random
 import helpSimulate as hsm
 import magicVariables as mv
 from classLine import *
+import algorithms as alg
 
 class Character(metaclass = ABCMeta):
 
@@ -21,12 +22,12 @@ class Character(metaclass = ABCMeta):
     """Creates a new character object using the create() method in helpSimulate."""
     @abstractmethod
     def __init__(self, prefab, filename, objPos, stamina, size=1):
-        self.rot = self.__generateRandRot() # rotation in quanternion
+        self.yaw = self.__generateRandYaw() # yaw rotation in radians
         self.pos = objPos
         self.speed = 0.0
         self.stamina = stamina
         self.hunger = 1.0
-        self.objID = hsm.create(prefab, filename, objPos, self.rot, scale=size)
+        self.objID = hsm.create(prefab, filename, objPos, self.yaw, scale=size)
         hsm.objIDToObject[self.objID] = self # populate dictionary with this character
 
     @abstractmethod
@@ -52,20 +53,14 @@ class Character(metaclass = ABCMeta):
     def updateRotPosSpeed(self):
         # update pos, rot
         self.pos = p.getBasePositionAndOrientation(self.objID)[0]
-        p.resetBasePositionAndOrientation(self.objID, self.pos, self.rot)
+        rot = alg.quatFromYawRad(self.yaw)
+        p.resetBasePositionAndOrientation(self.objID, self.pos, rot)
         # update speed 
-        eulerAngle = p.getEulerFromQuaternion(self.rot)
-        angle = eulerAngle[2]
-        yVel = self.speed * np.sin(angle)
-        xVel = self.speed * np.cos(angle)
+        yVel = self.speed * np.sin(self.yaw)
+        xVel = self.speed * np.cos(self.yaw)
         p.resetBaseVelocity(self.objID, [xVel, yVel, -50.0])
     
-    def getQuanternionFromYawDegree(self, yawInDegrees):
-        """Returns a quanternion depending on the updated yaw in degrees and the current rotation"""
-        yawInRadians = math.radians(yawInDegrees)
-        currentRotInEuler = p.getEulerFromQuaternion(self.rot)
-        newRotInEuler = [currentRotInEuler[0], currentRotInEuler[1], yawInRadians]
-        return p.getQuaternionFromEuler(newRotInEuler)
+    
 
     @abstractmethod
     def updateStamina(self, threshold, staminaFactor):
@@ -111,7 +106,12 @@ class Character(metaclass = ABCMeta):
             predatorsHit: a list of [objID, objPos] of the predators in view
             foodHit: a list of [objID, objPos] of the food in view
         """
-        maxGap = min(mv.PREDATOR_SIZE, mv.PREY_SIZE, mv.FOOD_SIZE)
+        if self in hsm.preyList:
+            maxGap = min(mv.PREDATOR_SIZE, mv.FOOD_SIZE)
+        elif self in hsm.predatorList:
+            maxGap = mv.PREY_SIZE
+        else:
+            maxGap = min(mv.PREDATOR_SIZE, mv.PREY_SIZE, mv.FOOD_SIZE)
         objHitList = self.look(dist, fieldOfViewAngle, maxGap)
         preyHit = []
         predatorsHit = []
@@ -149,24 +149,19 @@ class Character(metaclass = ABCMeta):
         """
         viewAngle = math.radians(viewAngle)
         center = self.pos
-        direction = self.rot
-        z_rot = p.getEulerFromQuaternion(direction)[2]
-        numRayCasts = math.ceil((dist) * (viewAngle) / (maxGap)) + 1
+        z_rot = self.yaw
+        numRayCasts = math.ceil((dist) * (viewAngle) / (maxGap + 0.0)) + 1
         startPosList = [center]*numRayCasts
         endPosList = []
-        viewAngle = maxGap * (numRayCasts - 1) / dist # because numRayCasts is rounded up, original view angle has likely changed
+        viewAngle = maxGap * (numRayCasts - 1) / (dist + 0.0) # because numRayCasts is rounded up, original view angle has likely changed
         angle = z_rot - viewAngle / 2
         for i in range(numRayCasts):
-            x = center[0] + math.cos(z_rot + angle) * dist
-            y = center[1] + math.sin(z_rot + angle) * dist
-            z = min(mv.PREY_SIZE, mv.PREDATOR_SIZE, mv.FOOD_SIZE) / 2
+            x = center[0] + math.cos(angle) * dist
+            y = center[1] + math.sin(angle) * dist
+            z = maxGap / 2.0
             endPosList.append([x,y,z])
             angle += viewAngle / (numRayCasts - 1)
         rayList = p.rayTestBatch(startPosList, endPosList)
-        
-        newLines = [Line(startPosList[i], endPosList[i]) for i in range(numRayCasts) if i % 3 == 0]
-        for line in newLines:
-            hsm.addToLineList(line)
 
         hitObjList = []
         for rayOutput in rayList:
@@ -179,22 +174,8 @@ class Character(metaclass = ABCMeta):
 
     """----------------------- Helper methods ------------------------"""
 
-    
-    """Helper methods for setVelocity"""
-    """def __chooseSpeed(self, tiredSpeed, maxSpeed, tiredStamina):
-        Helper method for setVelocity, chooses random speed
-        input:
-            tiredSpeed: float, speed of the character when their stamina is low
-            maxSpeed: float, maximum speed of the character. See magicVariables.py
-            tiredStamina: float, value of stamina of character when character is tired. See magicVariables.py."""
-        # if stamina is too low, then the max speed of the character will be tiredSpeed
-        #if self.stamina <= tiredStamina:
-            #maxSpeed = tiredSpeed
-        # generate random floating point number between 0 and either tiredSpeed or maxSpeed
-        #return random.uniform(0.0, maxSpeed)
-    
-    def __generateRandRot(self):
-        """Generates a random rotation about the y-axis""" 
-        return p.getQuaternionFromEuler([0.0, 0.0, random.uniform(0.0, 2.0 * np.pi)])
+    def __generateRandYaw(self):
+        """Generates a random yaw about the y-axis in RADIANS""" 
+        return random.uniform(0.0, 2.0 * np.pi)
 
 

@@ -6,7 +6,7 @@ import numpy as np
 
 class Food:
     def __init__(self, objPos):
-        self.objID = hsm.create("food", mv.prefabToURDF["food"], objPos, p.getQuaternionFromEuler([0.0, 0.0, random.uniform(0.0, 2.0 * np.pi)]), mv.FOOD_SIZE)
-        hsm.objIDToObject[self.objID] = self
+        self.yaw = random.uniform(0.0, 2.0 * np.pi)
         self.pos = objPos
-        self.rot = p.getQuaternionFromEuler([0,0,0]) #shouldn't be used for anything
+        self.objID = hsm.create("food", mv.prefabToURDF["food"], self.pos, self.yaw, mv.FOOD_SIZE)
+        hsm.objIDToObject[self.objID] = self

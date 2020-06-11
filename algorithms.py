@@ -84,7 +84,14 @@ def calcAngleTo(pos1, pos2):
         double, angle from pos1 to pos2 in degrees. Range: 0 to 360, inclusive.
         0 is angle defined by the ray going from [0, 0, 0] to [1, 0, 0].
     """
-    # use arctan, convert to degrees.
+    # if x coords are same, make sure we dont divide by 0!!!!!!
+    if pos2[0] - pos1[0] == 0:
+        if pos2[1] - pos1[1] > 0:
+            return 90.0
+        else:
+            return 270.0
+
+    # use arctan, convert to degrees.        
     angle = m.degrees(m.atan((pos2[1] - pos1[1])/(pos2[0] - pos1[0])))
     # correct for position so all outputs are positive, and for issues with arctan.
     if pos2[0] < pos1[0]:
@@ -101,7 +108,7 @@ def probPreyDirection(direction, charID, predatorList, foodList):
     #get prey information
     prey = hsm.objIDToObject[charID]
     hunger = prey.hunger
-    currentAngle = m.degrees(p.getEulerFromQuaternion(prey.rot)[2])
+    currentAngle = m.degrees(prey.yaw)
     # make prey attracted to center if not running from predators
     probability += addDistFromCenterProb(direction, prey.pos, predatorList, mv.PREY_DECISION_CENTER_FACTOR, mv.PREY_DECISION_ACTIVATION_RADIUS)
     # --> whether bad dist to wall (if so, make smaller range and possibly rebalance weighting) | predator change (maybe also get closest) --> new prob
@@ -218,9 +225,7 @@ def genCharSpeed(yawArray, charID, maxSpeed, tiredSpeed, stamina, tiredStamina, 
     index = yawArray[2].index(yawArray[1])
     normalizedProb = normalizedYaws[index]
     speedAccordingToProb = maxSpeed * normalizedProb
-    print("speed according to prob is", speedAccordingToProb)
     currentSpeed = hsm.objIDToObject[charID].speed
-    print("currentSpeed is", currentSpeed)
     weightedProbSpeed = currentSpeedWeight * currentSpeed + (1 - currentSpeedWeight) * speedAccordingToProb
     # 2. pick from a normal distribution with this angle's probability at the center
     # get the normalized probability
@@ -240,7 +245,7 @@ def probPredDirection(direction, predID): #, preyList): ONLY CALLED when no prey
         predID: int, the objID of the predator"""
     prob = 0.0
     predObject = hsm.objIDToObject[predID]
-    currentAngle = m.degrees(p.getEulerFromQuaternion(predObject.rot)[2])
+    currentAngle = m.degrees(predObject.yaw)
     # adjust prob according to distance from center
     prob += addDistFromCenterProb(direction, predObject.pos, [], mv.PREDATOR_DECISION_CENTER_FACTOR, mv.CHASE_RADIUS)
     # adjust prob according to current direction
@@ -301,3 +306,13 @@ def normalize(myList):
     
     return myList
     
+def quatFromYawDeg(yawInDegrees):
+    """Returns a quanternion depending on the updated yaw in degrees"""
+    yawInRadians = m.radians(yawInDegrees)
+    newRotInEuler = [0.0, 0.0, yawInRadians]
+    return p.getQuaternionFromEuler(newRotInEuler)
+
+def quatFromYawRad(yawInRadians):
+    """Returns a quanternion depending on the updated yaw in radians"""
+    newRotInEuler = [0.0, 0.0, yawInRadians]
+    return p.getQuaternionFromEuler(newRotInEuler)

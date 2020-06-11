@@ -6,28 +6,28 @@ seed = {
         "targetedAware" : True,
         "proximityAware" : True,
         "preyStartCount" : 10,
-        "predStartCount" : 1,
+        "predStartCount" : 5,
         "foodStartCount" : 0,
-        "foodMaxCount" : 10,
-        "foodSpawnRate" : 50,
-        "terrainSize" : 200,
-        "preySightDistance" : 20,
-        "predSightDistance" : 25,
+        "foodMaxCount" : 15,
+        "foodSpawnRate" : 75,
+        "terrainSize" : 100,
+        "preySightDistance" : 10,
+        "predSightDistance" : 15,
         "predSightAngle" : 100,
         "preySpeed" : 70,#50, # 70
-        "predSpeed" : 70,#7, #5,
+        "predSpeed" : 60,#7, #5,
         "currentYawFactor" : 20.0,
         "regPredFactor" : 1.5,
         "targetPredFactor" : 4.5,
         "updateFrameRate" : 1.0,
-        "preyDecisionCenterFactor" : 0.5,
-        "predatorDecisionCenterFactor" : 1000,#0.5,
+        "preyDecisionCenterFactor" : 1.0,
+        "predatorDecisionCenterFactor" : 1.0,#0.5,
         "predatorDecisionCurrentYawFactor" : 10,#3.5,
         "predatorDecisionCurrentSpeedFactor" : 0.5,
         "predatorTargetSpeed": 20
 }
 
-hsm.simulate(12000, True, seed)
+hsm.simulate(3000, True, seed)
 
 #note, empty dictionary uses defaults
 

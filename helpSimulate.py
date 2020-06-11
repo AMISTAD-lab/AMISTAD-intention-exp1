@@ -9,12 +9,6 @@ from classTerrain import *
 from classFood import *
 import math as m
 import copy
-#import matplotlib.pyplot as plt 
-#import seaborn as sb #maybe need to pip install seaborn
-#import pandas as pd
-#import csv
-
-#inputFileName = "input.txt"
 
 frameCount = 0
 
@@ -144,9 +138,6 @@ def batchSimulate(numSimulations, maxSteps, shouldMakeScript, preferences):
     batchData["runsData"] = runsData 
     addAverages(batchData) 
     return batchData
-
-    #runsData = [run1Data, run2Data, run3Data]
-    #batchData = {runsData, avg, avg} 
     
 def addAverages(batchData):
     """computes averages form 'runsData' and adds them to batchData dict"""
@@ -199,7 +190,7 @@ def startSimulation():
     hsc.script.append([])
     hsc.maxID[0] = 0
     #start simulation
-    p.connect(p.GUI)
+    p.connect(p.DIRECT)
     p.setGravity(0,0,-10)
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     terrain = Terrain(mv.TERRAIN_SIZE)
@@ -239,7 +230,6 @@ def nextStep():
             hsc.script.append([])
             for obj in preyList + predatorList + foodList:
                 hu.unityUpdateObj(obj.objID, obj.pos, obj.yaw)
-            #global sightLineList
             global oldLineList
             for i in range(len(oldLineList)):
                 hu.destroyLine(i)
@@ -311,4 +301,4 @@ def destroy(objID):
     hu.unityDestroy(objID)
 
 def addToLineList(line):
-    sightLineList.append(line) #please
+    sightLineList.append(line)

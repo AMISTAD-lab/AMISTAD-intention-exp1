@@ -28,8 +28,6 @@ def vf(vector):
 
 def posf(vector):
     """USELESS BUT ALREADY IMPLEMENTED, SAME AS VF"""
-    #90 degree rotation around z axis, [x,y] -> [-y, x]
-    #vector = [-vector[1], vector[0], vector[2]]
     return vf(vector)
 
 def qf(yaw):

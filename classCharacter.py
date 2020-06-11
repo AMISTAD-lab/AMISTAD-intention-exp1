@@ -44,9 +44,7 @@ class Character(metaclass = ABCMeta):
         """
         self.updateStamina()
         self.eatFood()
-        #self.checkHitWall()
         self.updateRotPosSpeed()
-        #isDead = self.updateDeathStatus()        #if not isDead:
         observationList = self.getObservations()
         self.takeAction(observationList)
 
@@ -161,7 +159,7 @@ class Character(metaclass = ABCMeta):
             z = maxGap / 2.0
             endPosList.append([x,y,z])
             angle += viewAngle / (numRayCasts - 1)
-        rayList = p.rayTestBatch(startPosList, endPosList)
+        rayList = p.rayTestBatch(startPosList, endPosList, collisionFilterMask=mv.RAY_MASK)
 
         hitObjList = []
         for rayOutput in rayList:

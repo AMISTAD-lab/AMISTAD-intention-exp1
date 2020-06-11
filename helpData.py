@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt 
-import seaborn as sb #maybe need to pip install seaborn
+import seaborn as sb 
 import csv
 import pandas as pd
 import numpy as np
@@ -112,34 +112,13 @@ def strToNumList(listStr):
     listNum = [int(num) for num in listStr.split(",")]
     return listNum
 
-
-def heatMapFromCSV(fileName, groupParam1, groupParam2): #var1Str, var1Range, var2Str, var2Range, runs, maxSteps):
-    #inputfile = createSimInput([(var1Str, var1Range), (var2Str, var2Range)])
-    #seedList = createSeedListFromFile(inputfile)
-    #allData = simulateManySetups(runs, maxSteps, False, seedList)
+def heatMapFromCSV(fileName, groupParam1, groupParam2): 
     """
     Inputs: 
         fileName: string, the csv file name
         groupParam1: string, the first variable 
         groupParam2: string, the second variable to consider"""
     df = pd.read_csv(fileName)
-
-    #for 
-
-    #var1Values = 
-    #var2Values = []
-    #stepCounts = []
-    #for batchData in allData:
-        #var1Values.append(batchData[var1Str])
-        #var2Values.append(batchData[var2Str])
-        #stepCounts.append(batchData["avgStepCount"])
-
-    #ind = stepCounts.index(max(stepCounts))
-    #print(var1Str+":", var1Values[ind])
-    #print(var2Str+":", var2Values[ind])
-
-    # create data input for heatmap
-    #dataFrame = pd.DataFrame({var1Str: var1Values, var2Str: var2Values, 'avgStepCount': stepCounts})
     
     data = df.pivot_table(index=groupParam1, columns=groupParam2, values='stepCount')
 

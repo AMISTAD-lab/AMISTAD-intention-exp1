@@ -57,26 +57,27 @@ PROB_KEEP_TARGET = 0.95 # the probability of sticking with the current targeted 
 STD_DEV_CIRCLE = FULL_CIRCLE/6.0
 
 # control how much prey favor avoiding predators vs. getting food. Higher values mean greater influence.
-#PREY_DECISION_PREDATOR_STD = STD_DEV_CIRCLE/5.0
-PREY_DECISION_FOOD_FACTOR = 1.0
-#PREY_DECISION_FOOD_STD = STD_DEV_CIRCLE/5.0
-#PREY_DECISION_BAD_DIST_CURRENT_YAW_FACTOR = 2.0 * PREY_DECISION_CURRENT_YAW_FACTOR # NOT currently being used, double check this
-#PREY_DECISION_CURRENT_YAW_STD = STD_DEV_CIRCLE/4.0
+PREY_DECISION_FOOD_FACTOR = 1.5
 PREY_DECISION_CURRENT_SPEED_FACTOR = 0.5 # this one must be in range [0, 1]. Used in genCharSpeed
 
-
 PREY_DECISION_BIN_NUM = 12# math.ceil(FULL_CIRCLE * 0.5/PREY_DECISION_CURRENT_YAW_STD) # number of bins to use in estimation. larger means more accurate, but longer run time
-#PREY_DECISION_CLOSE_WALL_FACTOR = 15 * PREY_DECISION_WALL_FACTOR
-#PREY_DECISION_BAD_WALL_DIST = 1
-#PREY_WALL_STD_DEV = 90.0
 
-
-#PREDATOR_DECISION_ACTIVATION_RADIUS =  deprecated because CHASE_RADIUS is used instead.
-#PREDATOR_DECISION_PREY_FACTOR = 1.0
-#PREDATOR_DECISION_CURRENT_YAW_STD = STD_DEV_CIRCLE / 4.0
 PREDATOR_DECISION_BIN_NUM = 12 #<--- COME BACK TO THIS NUMBER! DEFINITELY NEEDS TWEAKING math.ceil(FULL_CIRCLE * 0.5/PREDATOR_DECISION_CURRENT_YAW_STD)
 
 TERRAIN_CENTER = [0, 0, 0] # center point of terrain. Used to attract pred/prey to center
+
+TERRAIN_GROUP = 0x01 # group number is like an identifier
+PREDATOR_GROUP = 0x02 
+PREY_GROUP = 0x04
+FOOD_GROUP = 0x08
+
+# 1's correspond to groups that COLLIDE with this object. 0's correspond to groups that DO NOT COLLIDE
+TERRAIN_MASK = PREDATOR_GROUP | PREY_GROUP | FOOD_GROUP # collide with everything except other terrain
+PREDATOR_MASK = TERRAIN_GROUP| PREDATOR_GROUP| PREY_GROUP # dont collide with food
+PREY_MASK = TERRAIN_GROUP| PREDATOR_GROUP| PREY_GROUP | FOOD_GROUP # collide with everything!
+FOOD_MASK = TERRAIN_GROUP| PREY_GROUP | FOOD_GROUP # dont collide with predators
+
+RAY_MASK = TERRAIN_GROUP| PREDATOR_GROUP| PREY_GROUP | FOOD_GROUP  # collide with everything!
 
 #####################
 ## D E F A U L T S ##
@@ -94,6 +95,7 @@ TERRAIN_SIZE = 50 #side length of square
 TERRAIN_DIAMETER = TERRAIN_SIZE * 0.6 #percentage of terrainSize subject to change
 TERRAIN_RADIUS = TERRAIN_DIAMETER / 2.0 
 CHASE_RADIUS = TERRAIN_RADIUS * 0.7 #border of predator chasing prey
+SPAWN_RADIUS = CHASE_RADIUS * 0.7
 #---#
 
 PREY_START_COUNT = 10
@@ -120,7 +122,6 @@ PREDATOR_MEDIAN_SPEED = PREDATOR_MAX_SPEED/2
     
 PREDATOR_STAMINA_SPEED_THRESHOLD = 0.5 * PREDATOR_MAX_SPEED
 
-
 PREY_MAX_SPEED = 50.0
 
 PREY_TIRED_SPEED =  PREY_MAX_SPEED / 3
@@ -128,8 +129,6 @@ PREY_TIRED_SPEED =  PREY_MAX_SPEED / 3
 PREY_MEDIAN_SPEED = PREY_MAX_SPEED/2
 
 PREY_STAMINA_SPEED_THRESHOLD = 0.5 * PREY_MAX_SPEED
-
-#PREY_DECISION_CURRENT_SPEED_STD = PREY_MAX_SPEED/12.0 
 
 PREY_DECISION_ACTIVATION_RADIUS = TERRAIN_RADIUS * 0.7
 
@@ -140,8 +139,6 @@ PREY_DECISION_CURRENT_YAW_FACTOR = 1.0
 PREY_DECISION_PREDATOR_FACTOR = 1.0#1.5
 
 PREY_DECISION_TARGETED_BY_PRED_FACTOR = 1.0#12.0 * PREY_DECISION_PREDATOR_FACTOR
-
-#PREY_DECISION_WALL_FACTOR = 1.0
 
 PREDATOR_DECISION_CURRENT_YAW_FACTOR = 0.5
 PREDATOR_DECISION_CENTER_FACTOR = 0.1  # should adjust later!!!
@@ -211,6 +208,10 @@ def redefineMagicVariables(preferences):
     global CHASE_RADIUS
     CHASE_RADIUS = TERRAIN_RADIUS * 0.7 #border of predator chasing prey
 
+    global SPAWN_RADIUS
+    SPAWN_RADIUS = CHASE_RADIUS * 0.7
+
+
     global PREY_SIGHT_DISTANCE
     PREY_SIGHT_DISTANCE = preferences["preySightDistance"]
 
@@ -232,9 +233,6 @@ def redefineMagicVariables(preferences):
     global PREY_STAMINA_SPEED_THRESHOLD
     PREY_STAMINA_SPEED_THRESHOLD = 0.5 * PREY_MAX_SPEED
 
-    #global PREY_DECISION_CURRENT_SPEED_STD
-    #PREY_DECISION_CURRENT_SPEED_STD = PREY_MAX_SPEED/12.0 
-
     global PREDATOR_MAX_SPEED
     PREDATOR_MAX_SPEED = preferences["predSpeed"]
 
@@ -255,9 +253,6 @@ def redefineMagicVariables(preferences):
 
     global PREY_DECISION_TARGETED_BY_PRED_FACTOR 
     PREY_DECISION_TARGETED_BY_PRED_FACTOR = preferences["targetPredFactor"]
-
-    #global PREY_DECISION_WALL_FACTOR
-    #PREY_DECISION_WALL_FACTOR = preferences["wallFactor"]
 
     global UPDATE_FRAME_RATE
     UPDATE_FRAME_RATE = preferences["updateFrameRate"]

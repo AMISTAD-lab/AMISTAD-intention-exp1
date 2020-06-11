@@ -17,6 +17,8 @@ class Terrain:
         self.floor = p.loadURDF(mv.prefabToURDF["plane"], [0,0,0], hor, useFixedBase=1, globalScaling=size/200)
         hu.unitySpawn(self.floor, "plane", [0,0,0], uHor, size/10) #set prefab as plane
         hsm.objIDToObject[self.floor] = self
+        p.setCollisionFilterGroupMask(self.floor, -1, mv.TERRAIN_GROUP, mv.TERRAIN_MASK)
+
  
         #make walls
         self.walls = []
@@ -31,3 +33,5 @@ class Terrain:
         for wallID in self.walls:
             hsm.objIDToObject[wallID] = self
             hsm.terrainWallIDs.append(wallID)
+            p.setCollisionFilterGroupMask(wallID, -1, mv.TERRAIN_GROUP, mv.TERRAIN_MASK)
+

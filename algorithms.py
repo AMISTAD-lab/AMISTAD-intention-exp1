@@ -12,27 +12,15 @@ import math as m
 import numpy as np
 import scipy.stats as sps
 
-#import test as t
-
-#NUM_BINS = 50.0 # number of bins for the getRandFromContinuousDist method. 
-# (larger means a better estimate, but longer run time.)
-
-#attempt at increasing decisiveness
-#oldMaxIndex = 0
-#oldMaxWeight = 1
-
-
 def randSpawnPos(characterRadius):
     """randomly chooses a spawn location within a circle in the terrain bounds. if overlapping with another item, tries again
     input:
         characterRadius: the radius of the character, for overlap checking purposes
     """
-    r = mv.TERRAIN_RADIUS * m.sqrt(rng.random()) 
+    r = mv.SPAWN_RADIUS * m.sqrt(rng.random()) 
     theta = rng.random() * 2 * m.pi
     x1 = mv.TERRAIN_CENTER[0] + r * m.cos(theta)
     y1 = mv.TERRAIN_CENTER[1] + r * m.sin(theta)
-    #x1 = rng.uniform(-mv.TERRAIN_SIZE/2.0, mv.TERRAIN_SIZE/2.0)
-    #y1 = rng.uniform(-mv.TERRAIN_SIZE/2.0, mv.TERRAIN_SIZE/2.0)
     for predator in hsm.predatorList:
         x2, y2 = predator.pos[:2]
         if m.sqrt(m.pow(x2 - x1, 2) + m.pow(y2 - y1, 2)) <= characterRadius + mv.PREDATOR_SIZE/2:
@@ -111,11 +99,8 @@ def probPreyDirection(direction, charID, predatorList, foodList):
     currentAngle = m.degrees(prey.yaw)
     # make prey attracted to center if not running from predators
     probability += addDistFromCenterProb(direction, prey.pos, predatorList, mv.PREY_DECISION_CENTER_FACTOR, mv.PREY_DECISION_ACTIVATION_RADIUS)
-    # --> whether bad dist to wall (if so, make smaller range and possibly rebalance weighting) | predator change (maybe also get closest) --> new prob
     probability += addPredProb(direction, charID, prey.pos, predatorList)
-    #food change --> new prob
     probability += addFoodProb(direction, prey.pos, hunger, foodList)
-    # --> whether bad dist to wall (if so, increase weight to increase decisiveness) | current angle change --> new prob
     probability += addCurrentProb(direction, currentAngle, mv.PREY_DECISION_CURRENT_YAW_FACTOR)
     # check if prob is less than or equal to 0
     if probability < 0:
@@ -137,12 +122,10 @@ def addDistFromCenterProb(direction, pos, predatorList, factor, activationRadius
         return 0
     # Otherwise, calculate if we are inside the activation radius.
     distToCenter = calcDistance(pos, mv.TERRAIN_CENTER)
-    #if distToCenter < activationRadius:
-        #return 0
     # weight depends on distance to center. Increases according to a power function as we move away from center.
-    distanceFactor = (distToCenter/(mv.TERRAIN_RADIUS + 0.0))**4
+    distanceFactor = (distToCenter/(mv.SPAWN_RADIUS + 0.0))**4
     angleToCenter = calcAngleTo(pos, mv.TERRAIN_CENTER)
-    return factor * distanceFactor * angleWeight(angleToCenter, direction) # i suggest dividing by some radius
+    return factor * distanceFactor * angleWeight(angleToCenter, direction) 
 
 
 def addPredProb(direction, charID, pos, predList):
@@ -165,7 +148,6 @@ def addPredProb(direction, charID, pos, predList):
         else:
             targetFactor = mv.PREY_DECISION_PREDATOR_FACTOR
         # change prob accordingly
-        #probChange -= (0.5) * distanceFactor * targetFactor *  angleWeight(angleToPred, direction)
         probChange += distanceFactor * targetFactor * angleWeight(angleToPred + 180.0, direction)
     return probChange
 
@@ -186,7 +168,7 @@ def addFoodProb(direction, pos, hunger, foodList):
     return probChange
 
 def addCurrentProb(direction, currentAngle, factor):
-    probChange = factor * angleWeight(currentAngle, direction)# * angleWeight(currentAngle, direction, 0.7, 0, 4)
+    probChange = factor * angleWeight(currentAngle, direction)
     return probChange
 
 def angleWeight(angle1, angle2, hshift=0.5, vshift=0, power=3.0):
@@ -239,7 +221,7 @@ def genCharSpeed(yawArray, charID, maxSpeed, tiredSpeed, stamina, tiredStamina, 
 
     return speed
 
-def probPredDirection(direction, predID): #, preyList): ONLY CALLED when no prey in sight!!!!!
+def probPredDirection(direction, predID):# ONLY CALLED when no prey in sight!!!!!
     """Inputs:
         direction: float, the angle which we are calculating the prob of
         predID: int, the objID of the predator"""
@@ -282,7 +264,6 @@ def genRandFromContinuousDist(funct, minVal, maxVal, numBins, *args):
         print("all probs are 0!!! ")
     probs = normalize(probs)
     
-    #t.makeAngleVTimePlot(nums, probs, binWidth)
     # pick one
     selectedBinMid = np.random.choice(nums, size=1, p=probs)[0]
 

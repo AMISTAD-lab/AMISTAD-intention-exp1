@@ -1,5 +1,4 @@
-#       Decide if we want to use z axis for takeAction (choosing a prey)
-# dont target prey if outside a certian radius.
+
 
 import pybullet as p
 import pybullet_data
@@ -11,7 +10,6 @@ import numpy.random as npr
 from classCharacter import *
 import algorithms as alg
 from classLine import *
-#import test as t
 
 class Predator(Character):
     """A class for the predator"""
@@ -20,6 +18,8 @@ class Predator(Character):
         super().__init__("predator", mv.prefabToURDF["predator"], objPos, mv.PREDATOR_MAX_STAMINA, mv.PREDATOR_SIZE)
         self.lastTargetedPrey = None
         self.preyTimeStamps = []
+        p.setCollisionFilterGroupMask(self.objID, -1, mv.PREDATOR_GROUP, mv.PREDATOR_MASK)
+
 
     def updateCharacter(self):
         """Overrides Character's updateCharacter method, called each step of simulation."""
@@ -60,17 +60,20 @@ class Predator(Character):
             # reset previously targeted prey
             self.resetTarget()
             # if there are prey within sight and not out of chase distance, target one of them
-            inChaseRange = alg.calcDistance(self.pos, mv.TERRAIN_CENTER) < mv.CHASE_RADIUS
-            if inChaseRange and preyList:
+            dist = alg.calcDistance(self.pos, mv.TERRAIN_CENTER)
+            
+            #adding prob of turning back as we approach chase radius
+            probTurnBack = (dist/mv.CHASE_RADIUS) ** 15
+            turnBack = npr.choice([True, False], size=1, p=[probTurnBack, 1 - probTurnBack])[0]
+
+            if preyList and not turnBack:
                 self.targetPrey(preyList)
             # otherwise, pick weighted random speed and direction 
             else:
                 self.lastTargetedPrey = None
                 yawAndAngleArray = alg.genRandFromContinuousDist(alg.probPredDirection, 0, mv.FULL_CIRCLE, mv.PREDATOR_DECISION_BIN_NUM, self.objID)
-                #t.makeAngleVTimePlot(yawAndAngleArray[2], yawAndAngleArray[3], yawAndAngleArray[2][1] - yawAndAngleArray[2][0])
                 self.speed = alg.genCharSpeed(yawAndAngleArray, self.objID, mv.PREDATOR_MAX_SPEED, mv.PREDATOR_TIRED_SPEED, self.stamina, mv.PREDATOR_TIRED_STAMINA, mv.PREDATOR_DECISION_CURRENT_SPEED_FACTOR) # pass in this array so method knows 
-                self.yaw = m.radians(yawAndAngleArray[0])#super().getQuanternionFromYawDegree(yawAndAngleArray[0])
-
+                self.yaw = m.radians(yawAndAngleArray[0])
     
     def resetTarget(self):
         """Each frame, reset Predator's target by making its previously targeted prey no longer targeted
@@ -78,7 +81,6 @@ class Predator(Character):
         if self.lastTargetedPrey:
             lastPrey = hsm.objIDToObject[self.lastTargetedPrey]
             lastPrey.isTargeted = False
-            #self.lastTargetedPrey = None
 
     def targetPrey(self, preyList):
         """Inputs:
@@ -130,22 +132,4 @@ class Predator(Character):
         # make a vision line going towards prey
         newLine = Line(self.pos, preyPos)
         hsm.addToLineList(newLine)
-    
-    #def genPredSpeed(self):
-        # generate new randomish speed
-        #newSpeed = alg.genRandFromNormalDist(self.speed, mv.PREDATOR_MAX_SPEED/0.6)
-
-        # correct for stamina
-        #maxSpeed = mv.PREDATOR_MAX_SPEED
-        
-        #if self.stamina < mv.PREDATOR_TIRED_STAMINA:
-            #maxSpeed = mv.PREDATOR_TIRED_SPEED
-            
-        # make sure speed is in correct range
-        #if newSpeed < 0.0:
-            #newSpeed = 0.0
-        #elif newSpeed > maxSpeed:
-            #newSpeed = maxSpeed
-        #self.speed = newSpeed
-
 

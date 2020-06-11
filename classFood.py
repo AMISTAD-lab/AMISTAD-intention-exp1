@@ -10,3 +10,5 @@ class Food:
         self.pos = objPos
         self.objID = hsm.create("food", mv.prefabToURDF["food"], self.pos, self.yaw, mv.FOOD_SIZE)
         hsm.objIDToObject[self.objID] = self
+        p.setCollisionFilterGroupMask(self.objID, -1, mv.FOOD_GROUP, mv.FOOD_MASK)
+

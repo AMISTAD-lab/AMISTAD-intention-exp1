@@ -2,7 +2,6 @@ import helpSimulate as hsm
 import magicVariables as mv
 import helpUnity as hu
 import pybullet as p
-import helpScript as hsc
 import math
 
 class Terrain:

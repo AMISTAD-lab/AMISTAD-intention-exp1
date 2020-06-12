@@ -1,8 +1,3 @@
-"""classPrey.py
-5/22/20
-Subclass of Character. Provides attributes and behaviors for a Prey in the simulation.
-"""
-
 import pybullet as p
 import math as m
 import helpSimulate as hsm

@@ -1,5 +1,4 @@
 import algorithms as alg
-import math
 
 #change prefabs in script (if wanted), no longer drag&link
 prefabToURDF = {
@@ -16,6 +15,7 @@ prefabToURDF = {
 ###################
 
 FRAME_RATIO = 1
+UPDATE_FRAME_RATE = 1 # means prey and predator are updated every _____ frame 
 
 PREY_SPAWN_ALG = alg.randSpawnPos
 PREDATOR_SPAWN_ALG = alg.randSpawnPos
@@ -71,6 +71,18 @@ PREDATOR_GROUP = 0x02
 PREY_GROUP = 0x04
 FOOD_GROUP = 0x08
 
+PREY_DECISION_CENTER_FACTOR = 5
+
+PREY_DECISION_CURRENT_YAW_FACTOR = 30
+
+PREY_DECISION_PREDATOR_FACTOR = 1.5
+
+PREY_DECISION_TARGETED_BY_PRED_FACTOR = 6
+
+PREDATOR_DECISION_CURRENT_YAW_FACTOR = 30
+PREDATOR_DECISION_CENTER_FACTOR = 20  
+PREDATOR_DECISION_CURRENT_SPEED_FACTOR = 0.5
+
 # 1's correspond to groups that COLLIDE with this object. 0's correspond to groups that DO NOT COLLIDE
 TERRAIN_MASK = PREDATOR_GROUP | PREY_GROUP | FOOD_GROUP # collide with everything except other terrain
 PREDATOR_MASK = TERRAIN_GROUP| PREDATOR_GROUP| PREY_GROUP # dont collide with food
@@ -83,13 +95,11 @@ RAY_MASK = TERRAIN_GROUP| PREDATOR_GROUP| PREY_GROUP | FOOD_GROUP  # collide wit
 ## D E F A U L T S ##
 #####################
 
-UPDATE_FRAME_RATE = 4 # means prey and predator are updated every _____ frame 
-
 IS_PROXIMITY_AWARE = True
     
 IS_TARGETED_AWARE = True
 
-TERRAIN_SIZE = 50 #side length of square
+TERRAIN_SIZE = 250 #side length of square
 
 # ---note: See reassignments!!!! these values are NOT the ending values for these vars! 
 TERRAIN_DIAMETER = TERRAIN_SIZE * 0.6 #percentage of terrainSize subject to change
@@ -98,23 +108,23 @@ CHASE_RADIUS = TERRAIN_RADIUS * 0.7 #border of predator chasing prey
 SPAWN_RADIUS = CHASE_RADIUS * 0.7
 #---#
 
-PREY_START_COUNT = 10
+PREY_START_COUNT = 20
     
-PREDATOR_START_COUNT = 2
+PREDATOR_START_COUNT = 5
     
-FOOD_START_COUNT = 4
+FOOD_START_COUNT = 0
     
-FOOD_MAX_COUNT = 15
+FOOD_MAX_COUNT = 20
     
-FOOD_SPAWN_RATE = 250 #every __ number of frames spawn 1 food
+FOOD_SPAWN_RATE = 75 #every __ number of frames spawn 1 food
 
 PREDATOR_SIGHT_DISTANCE = 20
 
-PREDATOR_SIGHT_ANGLE = 100 #degrees
+PREDATOR_SIGHT_ANGLE = 90 #degrees
 
-PREY_SIGHT_DISTANCE = 20
+PREY_SIGHT_DISTANCE = 10
 
-PREDATOR_MAX_SPEED = 20.0
+PREDATOR_MAX_SPEED = 60.0
 
 PREDATOR_TIRED_SPEED = PREDATOR_MAX_SPEED / 3
     
@@ -122,7 +132,7 @@ PREDATOR_MEDIAN_SPEED = PREDATOR_MAX_SPEED/2
     
 PREDATOR_STAMINA_SPEED_THRESHOLD = 0.5 * PREDATOR_MAX_SPEED
 
-PREY_MAX_SPEED = 50.0
+PREY_MAX_SPEED = 75.0
 
 PREY_TIRED_SPEED =  PREY_MAX_SPEED / 3
     
@@ -132,19 +142,7 @@ PREY_STAMINA_SPEED_THRESHOLD = 0.5 * PREY_MAX_SPEED
 
 PREY_DECISION_ACTIVATION_RADIUS = TERRAIN_RADIUS * 0.7
 
-PREY_DECISION_CENTER_FACTOR = 0.1 # should adjust later!!!
-
-PREY_DECISION_CURRENT_YAW_FACTOR = 1.0
-
-PREY_DECISION_PREDATOR_FACTOR = 1.0#1.5
-
-PREY_DECISION_TARGETED_BY_PRED_FACTOR = 1.0#12.0 * PREY_DECISION_PREDATOR_FACTOR
-
-PREDATOR_DECISION_CURRENT_YAW_FACTOR = 0.5
-PREDATOR_DECISION_CENTER_FACTOR = 0.1  # should adjust later!!!
-PREDATOR_DECISION_CURRENT_SPEED_FACTOR = 0.5
-
-PREDATOR_TARGET_SPEED = 20
+PREDATOR_TARGET_SPEED = 25
 
 ###################
 ## REASSIGNMENTS ##
@@ -165,14 +163,7 @@ def redefineMagicVariables(preferences):
     "predSightAngle"
     "preySpeed"
     "predSpeed"
-    "currentYawFactor" *
-    "regPredFactor" *
-    "targetPredFactor" *
-    "updateFrameRate" *
-    "preyDecisionCenterFactor" *
-    "predatorDecisionCenterFactor" *
-    "predatorDecisionCurrentYawFactor" *
-    "predatorDecisionCurrentSpeedFactor" *
+    "predatorTargetSpeed"
     """
 
     global IS_TARGETED_AWARE
@@ -211,7 +202,6 @@ def redefineMagicVariables(preferences):
     global SPAWN_RADIUS
     SPAWN_RADIUS = CHASE_RADIUS * 0.7
 
-
     global PREY_SIGHT_DISTANCE
     PREY_SIGHT_DISTANCE = preferences["preySightDistance"]
 
@@ -244,30 +234,6 @@ def redefineMagicVariables(preferences):
     
     global PREDATOR_STAMINA_SPEED_THRESHOLD
     PREDATOR_STAMINA_SPEED_THRESHOLD = 0.5 * PREDATOR_MAX_SPEED
-
-    global PREY_DECISION_CURRENT_YAW_FACTOR
-    PREY_DECISION_CURRENT_YAW_FACTOR = preferences["currentYawFactor"]
-
-    global PREY_DECISION_PREDATOR_FACTOR
-    PREY_DECISION_PREDATOR_FACTOR = preferences["regPredFactor"] 
-
-    global PREY_DECISION_TARGETED_BY_PRED_FACTOR 
-    PREY_DECISION_TARGETED_BY_PRED_FACTOR = preferences["targetPredFactor"]
-
-    global UPDATE_FRAME_RATE
-    UPDATE_FRAME_RATE = preferences["updateFrameRate"]
-
-    global PREY_DECISION_CENTER_FACTOR
-    PREY_DECISION_CENTER_FACTOR = preferences["preyDecisionCenterFactor"]
-
-    global PREDATOR_DECISION_CENTER_FACTOR
-    PREDATOR_DECISION_CENTER_FACTOR = preferences["predatorDecisionCenterFactor"]
-
-    global PREDATOR_DECISION_CURRENT_YAW_FACTOR
-    PREDATOR_DECISION_CURRENT_YAW_FACTOR = preferences["predatorDecisionCurrentYawFactor"]
-
-    global PREDATOR_DECISION_CURRENT_SPEED_FACTOR
-    PREDATOR_DECISION_CURRENT_SPEED_FACTOR = preferences["predatorDecisionCurrentSpeedFactor"]
 
     global PREDATOR_TARGET_SPEED 
     PREDATOR_TARGET_SPEED = preferences["predatorTargetSpeed"]

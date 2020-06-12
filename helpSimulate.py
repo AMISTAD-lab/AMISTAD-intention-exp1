@@ -7,7 +7,6 @@ from classPrey import *
 from classPredator import *
 from classTerrain import *
 from classFood import *
-import math as m
 import copy
 
 frameCount = 0
@@ -82,25 +81,18 @@ def createSeedListFromFile(filename):
     standardSeed = {
         "targetedAware" : True,
         "proximityAware" : True,
-        "preyStartCount" : 1,
-        "predStartCount" : 1,
+        "preyStartCount" : 20,
+        "predStartCount" : 5,
         "foodStartCount" : 0,
-        "foodMaxCount" : 0,
-        "foodSpawnRate" : 0,
-        "terrainSize" : 20,
+        "foodMaxCount" : 20,
+        "foodSpawnRate" : 75,
+        "terrainSize" : 250,
         "preySightDistance" : 10,
-        "predSightDistance" : 10,
-        "predSightAngle" : 360,
-        "preySpeed" : 70,
-        "predSpeed" : 10,
-        "currentYawFactor" : 20.0,
-        "regPredFactor" : 1.0,
-        "targetPredFactor" : 1.75,
-        "updateFrameRate" : 1.0,
-        "preyDecisionCenterFactor" : 0.1,
-        "predatorDecisionCenterFactor" : 0.1,
-        "predatorDecisionCurrentYawFactor" : 3.5,
-        "predatorDecisionCurrentSpeedFactor" : 0.5
+        "predSightDistance" : 20,
+        "predSightAngle" : 90,
+        "preySpeed" : 75,
+        "predSpeed" : 60,
+        "predatorTargetSpeed": 25,
     }
 
     seedList = []
@@ -160,6 +152,7 @@ def simulate(maxSteps, shouldMakeScript, preferences):
     if preferences != {}:
         mv.redefineMagicVariables(preferences)
         #if it is empty, will use defaults
+        #won't store pref details either, so best use a seed
     startSimulation()
     for step in range(maxSteps):
         updateSimulation()
@@ -176,6 +169,7 @@ def initializeData(preferences):
     data["foodPerPrey"] = []
     data["preyPerPred"] = []
     data["survivingPrey"] = 0
+    data["scriptList"] = "no script generated"
 
 def startSimulation():
     """connect to pybullet and do initial spawns"""
@@ -191,7 +185,6 @@ def startSimulation():
     hsc.maxID[0] = 0
     #start simulation
     p.connect(p.DIRECT)
-    p.setGravity(0,0,-10)
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     terrain = Terrain(mv.TERRAIN_SIZE)
     spawnPrey(mv.PREY_START_COUNT)
@@ -218,6 +211,7 @@ def endSimulation(shouldMakeScript):
     data["stepCount"] = frameCount
     data["survivingPrey"] = len(preyList)
     if shouldMakeScript:
+        data["scriptList"] = copy.deepcopy(hsc.script)
         hsc.makeScript()
         print("SCRIPT GENERATED")
 

@@ -1,6 +1,5 @@
 import helpScript as hsc
 import magicVariables as mv
-import pybullet as p
 import algorithms as alg
 import math as m
 

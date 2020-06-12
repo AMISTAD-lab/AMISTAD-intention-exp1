@@ -1,7 +1,3 @@
-# classCharacter.py
-# abstract class for a character, contains methods for updating character, movement.
-# todo: 
-
 import abc
 from abc import ABC, abstractmethod, ABCMeta
 

@@ -1,16 +1,9 @@
-# To check: 
-#    - prey proximity vs. targeted aware
-# To test:
-#   - Prey factor for going back toward center (strength)
-
-
 import pybullet as p
 import helpSimulate as hsm
 import magicVariables as mv
 import random as rng
 import math as m
 import numpy as np
-import scipy.stats as sps
 
 def randSpawnPos(characterRadius):
     """randomly chooses a spawn location within a circle in the terrain bounds. if overlapping with another item, tries again

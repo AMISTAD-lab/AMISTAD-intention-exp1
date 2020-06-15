@@ -181,7 +181,7 @@ def angleDiff(angle1, angle2):
     diff = m.sqrt(m.pow(vDiff,2) + m.pow(hDiff,2))
     return diff
 
-def genCharSpeed(yawArray, charID, maxSpeed, tiredSpeed, stamina, tiredStamina, currentSpeedWeight):
+def genCharSpeed(yawArray, charID, maxSpeed, tiredSpeed, stamina, tiredStamina, currentSpeedWeight): # note: maxSpeed should be adjusted for stamina
     """Generates a random prey speed, weighted depending on the weighted probability of direction that was chosen.
     Must generate random direction FIRST before calling this method
     Inputs: 
@@ -193,21 +193,25 @@ def genCharSpeed(yawArray, charID, maxSpeed, tiredSpeed, stamina, tiredStamina, 
         tiredStamina: float, stamina below which the character's max speed is tiredSpeed.
         currentSpeedWeight: float, the weight of the currentSpeed of the character. (range: 0.0 --> 1.0)
     """
+    charObj = hsm.objIDToObject[charID]
     # 1. normalize the distribution
     yawProbs = yawArray[3]
     normalizedYaws = normalize(yawProbs)
     # 1.5. Make weighted average between normalizedProb and the current speed
     index = yawArray[2].index(yawArray[1])
     normalizedProb = normalizedYaws[index]
+    
     speedAccordingToProb = maxSpeed * normalizedProb
-    currentSpeed = hsm.objIDToObject[charID].speed
+    currentSpeed = charObj.speed
     weightedProbSpeed = currentSpeedWeight * currentSpeed + (1 - currentSpeedWeight) * speedAccordingToProb
     # 2. pick from a normal distribution with this angle's probability at the center
     # get the normalized probability
     speed = genRandFromNormalDist(weightedProbSpeed, maxSpeed) # speed goes from 0 to max
     # 3. Cap at max speed, factor in stamina
     speed = abs(speed) # make sure speed will be positive always
-    if stamina < tiredStamina:
+    
+
+    if charObj.isTired: #stamina < tiredStamina:
         maxSpeed = tiredSpeed
     if speed > maxSpeed:
         speed = maxSpeed

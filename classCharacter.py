@@ -22,6 +22,7 @@ class Character(metaclass = ABCMeta):
         self.pos = objPos
         self.speed = 0.0
         self.stamina = stamina
+        self.isTired = False
         self.hunger = 1.0
         self.objID = hsm.create(prefab, filename, objPos, self.yaw, scale=size)
         hsm.objIDToObject[self.objID] = self # populate dictionary with this character
@@ -57,7 +58,7 @@ class Character(metaclass = ABCMeta):
     
 
     @abstractmethod
-    def updateStamina(self, threshold, staminaFactor, maxStamina):
+    def updateStamina(self, thresholdSpeed, maxStamina):
         """Updates the stamina of the character according to its current speed.
         Prey, Predator should override this with their specific threshholds and staminaFactors
         Inputs:
@@ -66,9 +67,18 @@ class Character(metaclass = ABCMeta):
             increases otherwise
             staminaFactor: the number by which to multiply the difference between speed and 
             threshold by to get stamina change"""
-        change = staminaFactor * (threshold - self.speed) / threshold
+        change =  (thresholdSpeed - self.speed) / thresholdSpeed
+        if change < 0:
+            change *= mv.DECREASE_STAMINA_FACTOR
+        else:
+            change *= mv.INCREASE_STAMINA_FACTOR
         self.stamina = self.stamina + change
-        if self.stamina > maxStamina:
+        if self.stamina <= 0.2:
+            self.isTired = True
+            if self.stamina < 0:
+                self.stamina = 0
+        elif self.stamina >= maxStamina:
+            self.isTired = False
             self.stamina = maxStamina
 
     @abstractmethod

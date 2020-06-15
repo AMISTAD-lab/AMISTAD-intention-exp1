@@ -45,7 +45,7 @@ class Prey(Character):
 
     def updateStamina(self):
         """Updates the stamina of the prey each frame according to its current speed."""
-        return super().updateStamina(mv.PREY_MAX_SPEED * 0.5, mv.STAMINA_FACTOR, mv.PREY_MAX_STAMINA)
+        return super().updateStamina(mv.PREY_MAX_SPEED * 0.5, mv.PREY_MAX_STAMINA)
 
     def getObservations(self):
         """Overrides Character's getObservations"""
@@ -65,9 +65,9 @@ class Prey(Character):
             # use algorithm to figure out where to move next, according to proximity of food/predators
             yawAndAngleArray = alg.genRandFromContinuousDist(alg.probPreyDirection, 0, mv.FULL_CIRCLE, mv.PREY_DECISION_BIN_NUM, self.objID, observationList[1], observationList[2])
             self.yaw = m.radians(yawAndAngleArray[0])
-            # make speed equal to the maximum possible (corrected for stamina) if prey is targeted.
+    
             if self.isTargeted:
-                if self.stamina < mv.PREY_TIRED_STAMINA:
+                if self.isTired:
                     self.speed = mv.PREY_TIRED_SPEED                
                 else:
                     self.speed = mv.PREY_MAX_SPEED

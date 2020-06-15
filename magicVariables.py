@@ -39,11 +39,10 @@ PREY_TIRED_STAMINA = 0.2
 
 PREDATOR_MAX_STAMINA = 1.0
 
-STAMINA_FACTOR = 0.0025 #
+DECREASE_STAMINA_FACTOR = 0.0025
+INCREASE_STAMINA_FACTOR = 0.01
 
 PREY_MAX_STAMINA = 1.5
-
-STAMINA_FACTOR = 0.01 # changes should only be 1/100 th of what the difference between speed and threshhold is.
 
 INIT_HUNGER = 1.0 # for predator and prey
 PREY_MAX_HUNGER = 1.0 # prey cannot eat more food than this. 
@@ -102,7 +101,6 @@ IS_PROXIMITY_AWARE = True
 IS_TARGETED_AWARE = True
 
 TERRAIN_SIZE = 250 #side length of square
-
 # ---note: See reassignments!!!! these values are NOT the ending values for these vars! 
 TERRAIN_DIAMETER = TERRAIN_SIZE * 0.6 #percentage of terrainSize subject to change
 TERRAIN_RADIUS = TERRAIN_DIAMETER / 2.0 
@@ -110,27 +108,23 @@ CHASE_RADIUS = TERRAIN_RADIUS * 0.7 #border of predator chasing prey
 SPAWN_RADIUS = CHASE_RADIUS * 0.7
 #---#
 
-PREY_START_COUNT = 20
+PREY_PRED_RATIO = 4
     
 PREDATOR_START_COUNT = 5
+
+PREY_START_COUNT = PREDATOR_START_COUNT * PREY_PRED_RATIO
     
 FOOD_START_COUNT = 0
     
-FOOD_MAX_COUNT = 20
+FOOD_MAX_COUNT = PREY_START_COUNT
     
-FOOD_SPAWN_RATE = 75 #every __ number of frames spawn 1 food
+FOOD_SPAWN_RATE = 70 #every __ number of frames spawn 1 food
 
 PREDATOR_SIGHT_DISTANCE = 20
 
 PREDATOR_SIGHT_ANGLE = 90 #degrees
 
 PREY_SIGHT_DISTANCE = 10
-
-PREDATOR_MAX_SPEED = 60.0
-
-PREDATOR_TIRED_SPEED = PREDATOR_MAX_SPEED / 3
-    
-PREDATOR_MEDIAN_SPEED = PREDATOR_MAX_SPEED/2
     
 PREY_MAX_SPEED = 75.0
 
@@ -138,9 +132,15 @@ PREY_TIRED_SPEED =  PREY_MAX_SPEED / 3
     
 PREY_MEDIAN_SPEED = PREY_MAX_SPEED/2
 
+PREDATOR_MAX_SPEED = PREY_MAX_SPEED * 0.8
+
+PREDATOR_TIRED_SPEED = PREDATOR_MAX_SPEED / 3
+    
+PREDATOR_MEDIAN_SPEED = PREDATOR_MAX_SPEED/2
+
 PREY_DECISION_ACTIVATION_RADIUS = TERRAIN_RADIUS * 0.7
 
-PREDATOR_TARGET_SPEED = 25
+PREDATOR_TARGET_SPEED = PREDATOR_MAX_SPEED * (2/3.0)
 
 ###################
 ## REASSIGNMENTS ##
@@ -150,18 +150,11 @@ def redefineMagicVariables(preferences):
     """preferences is a dictionary with values for the following keys:
     "targetedAware"
     "proximityAware"
-    "preyStartCount"
-    "predStartCount"
-    "foodStartCount"
-    "foodMaxCount"
-    "foodSpawnRate"
-    "terrainSize"
+    "preyPredRatio"
     "preySightDistance"
     "predSightDistance"
     "predSightAngle"
-    "preySpeed"
-    "predSpeed"
-    "predatorTargetSpeed"
+    "speedFrac" #pred speed is fraction of prey speed
     """
 
     global IS_TARGETED_AWARE
@@ -171,34 +164,10 @@ def redefineMagicVariables(preferences):
     IS_PROXIMITY_AWARE = preferences["proximityAware"]
 
     global PREY_START_COUNT
-    PREY_START_COUNT = preferences["preyStartCount"]
-    
-    global PREDATOR_START_COUNT
-    PREDATOR_START_COUNT = preferences["predStartCount"]
-    
-    global FOOD_START_COUNT
-    FOOD_START_COUNT = preferences["foodStartCount"]
+    PREY_START_COUNT = PREDATOR_START_COUNT * preferences["preyPredRatio"]
     
     global FOOD_MAX_COUNT
-    FOOD_MAX_COUNT = preferences["foodMaxCount"]
-    
-    global FOOD_SPAWN_RATE
-    FOOD_SPAWN_RATE = preferences["foodSpawnRate"]
-
-    global TERRAIN_SIZE
-    TERRAIN_SIZE = preferences["terrainSize"] 
-
-    global TERRAIN_DIAMETER
-    TERRAIN_DIAMETER = TERRAIN_SIZE * 0.6 #percentage of terrainSize subject to change
-
-    global TERRAIN_RADIUS
-    TERRAIN_RADIUS = TERRAIN_DIAMETER / 2.0 
-
-    global CHASE_RADIUS
-    CHASE_RADIUS = TERRAIN_RADIUS * 0.7 #border of predator chasing prey
-
-    global SPAWN_RADIUS
-    SPAWN_RADIUS = CHASE_RADIUS * 0.7
+    FOOD_MAX_COUNT = PREY_START_COUNT 
 
     global PREY_SIGHT_DISTANCE
     PREY_SIGHT_DISTANCE = preferences["preySightDistance"]
@@ -209,17 +178,8 @@ def redefineMagicVariables(preferences):
     global PREDATOR_SIGHT_ANGLE
     PREDATOR_SIGHT_ANGLE = preferences["predSightAngle"]
 
-    global PREY_MAX_SPEED
-    PREY_MAX_SPEED = preferences["preySpeed"]
-
-    global PREY_TIRED_SPEED
-    PREY_TIRED_SPEED = PREY_MAX_SPEED / 3
-    
-    global PREY_MEDIAN_SPEED
-    PREY_MEDIAN_SPEED = PREY_MAX_SPEED/2
-
     global PREDATOR_MAX_SPEED
-    PREDATOR_MAX_SPEED = preferences["predSpeed"]
+    PREDATOR_MAX_SPEED = PREY_MAX_SPEED * preferences["speedFrac"]
 
     global PREDATOR_TIRED_SPEED
     PREDATOR_TIRED_SPEED = PREDATOR_MAX_SPEED / 3
@@ -228,4 +188,4 @@ def redefineMagicVariables(preferences):
     PREDATOR_MEDIAN_SPEED = PREDATOR_MAX_SPEED/2
 
     global PREDATOR_TARGET_SPEED 
-    PREDATOR_TARGET_SPEED = preferences["predatorTargetSpeed"]
+    PREDATOR_TARGET_SPEED = PREDATOR_MAX_SPEED * 2/3.0

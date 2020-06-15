@@ -47,15 +47,16 @@ class Predator(Character):
     def updateStamina(self):
         """Updates the stamina of the predator each frame according to its current speed."""
         if self.lastTargetedPrey == None:
-            return super().updateStamina(mv.PREDATOR_MAX_SPEED * 0.5, mv.STAMINA_FACTOR, mv.PREDATOR_MAX_STAMINA)
+            return super().updateStamina(mv.PREDATOR_MAX_SPEED * 0.5, mv.PREDATOR_MAX_STAMINA)
         else:
-            return super().updateStamina(mv.PREDATOR_TARGET_SPEED * 0.5, mv.STAMINA_FACTOR, mv.PREDATOR_MAX_STAMINA)
+            return super().updateStamina(mv.PREDATOR_TARGET_SPEED * 0.5, mv.PREDATOR_MAX_STAMINA)
 
     def takeAction(self, observationList):
         # decrement hunger
         self.hunger -= mv.PREDATOR_DECREMENT_HUNGER
-
+    
         if hsm.frameCount % mv.UPDATE_FRAME_RATE == 0:
+
             # get preyList:
             preyList = observationList[0] # list of prey, objID AND position.
             # reset previously targeted prey
@@ -125,7 +126,7 @@ class Predator(Character):
         self.yaw = m.radians(yawInDegrees)
 
         #go at max possible speed after chosen prey
-        if self.stamina < mv.PREDATOR_TIRED_STAMINA:
+        if self.isTired:
             self.speed = mv.PREDATOR_TARGET_SPEED/3.0
         else:
             self.speed = mv.PREDATOR_TARGET_SPEED

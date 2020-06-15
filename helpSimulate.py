@@ -48,6 +48,43 @@ def printProgressBar (iteration, total, prefix = 'Progress:', suffix = 'Complete
     if iteration == total: 
         print()
 
+
+def createExpInputFile():
+    filename = "experimentInput.txt"
+    file = open(filename, "w")
+    for targetedAware in [True, False]:
+        toWrite = "targetedAware " + str(targetedAware) + "\n"
+        for proximityAware in [True, False]:
+            saveToWrite = toWrite
+            toWrite += "proximityAware " + str(proximityAware) + "\n"
+            if not (targetedAware and not proximityAware):
+
+                for preySightDistance in range(5, 50+1, 5):
+                    file.write(toWrite)
+                    file.write("preySightDistance " + str(preySightDistance) + "\n\n")
+
+                for predSightDistance in range(5, 50+1, 5):
+                    file.write(toWrite)
+                    file.write("predSightDistance " + str(predSightDistance) + "\n\n")
+
+                for predSightAngle in range(60, 120+1, 10):
+                    file.write(toWrite)
+                    file.write("predSightAngle " + str(predSightAngle) + "\n\n")
+
+                for predPreyRatio in range(1, 10+1, 1):
+                    file.write(toWrite)
+                    file.write("predPreyRatio " + str(predPreyRatio) + "\n\n")
+
+                for speedFrac in range(5, 15+1, 1):
+                    speedFrac /= 10 #hacky ik
+                    file.write(toWrite)
+                    file.write("speedFrac " + str(speedFrac) + "\n\n")
+
+            toWrite = saveToWrite
+    file.close() 
+    return filename                     
+    
+
 def createSimInput(variableTupleList, fileName="inputFile.txt"):
     """ Called from command line, gives our program the parameters to run the simulation on
     Inputs:

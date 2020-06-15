@@ -38,10 +38,12 @@ PREDATOR_TIRED_STAMINA = 0.2
 PREY_TIRED_STAMINA = 0.2 
 
 PREDATOR_MAX_STAMINA = 1.0
-PREDATOR_STAMINA_FACTOR = 0.01 # changes should only be 1/100 th of what the difference between speed and threshhold is.
 
-PREY_MAX_STAMINA = 2.0
-PREY_STAMINA_FACTOR = 0.01 # changes should only be 1/100 th of what the difference between speed and threshhold is.
+STAMINA_FACTOR = 0.0025 #
+
+PREY_MAX_STAMINA = 1.5
+
+STAMINA_FACTOR = 0.01 # changes should only be 1/100 th of what the difference between speed and threshhold is.
 
 INIT_HUNGER = 1.0 # for predator and prey
 PREY_MAX_HUNGER = 1.0 # prey cannot eat more food than this. 
@@ -130,15 +132,11 @@ PREDATOR_TIRED_SPEED = PREDATOR_MAX_SPEED / 3
     
 PREDATOR_MEDIAN_SPEED = PREDATOR_MAX_SPEED/2
     
-PREDATOR_STAMINA_SPEED_THRESHOLD = 0.5 * PREDATOR_MAX_SPEED
-
 PREY_MAX_SPEED = 75.0
 
 PREY_TIRED_SPEED =  PREY_MAX_SPEED / 3
     
 PREY_MEDIAN_SPEED = PREY_MAX_SPEED/2
-
-PREY_STAMINA_SPEED_THRESHOLD = 0.5 * PREY_MAX_SPEED
 
 PREY_DECISION_ACTIVATION_RADIUS = TERRAIN_RADIUS * 0.7
 
@@ -220,9 +218,6 @@ def redefineMagicVariables(preferences):
     global PREY_MEDIAN_SPEED
     PREY_MEDIAN_SPEED = PREY_MAX_SPEED/2
 
-    global PREY_STAMINA_SPEED_THRESHOLD
-    PREY_STAMINA_SPEED_THRESHOLD = 0.5 * PREY_MAX_SPEED
-
     global PREDATOR_MAX_SPEED
     PREDATOR_MAX_SPEED = preferences["predSpeed"]
 
@@ -231,9 +226,6 @@ def redefineMagicVariables(preferences):
     
     global PREDATOR_MEDIAN_SPEED
     PREDATOR_MEDIAN_SPEED = PREDATOR_MAX_SPEED/2
-    
-    global PREDATOR_STAMINA_SPEED_THRESHOLD
-    PREDATOR_STAMINA_SPEED_THRESHOLD = 0.5 * PREDATOR_MAX_SPEED
 
     global PREDATOR_TARGET_SPEED 
     PREDATOR_TARGET_SPEED = preferences["predatorTargetSpeed"]

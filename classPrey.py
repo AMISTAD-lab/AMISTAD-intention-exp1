@@ -45,7 +45,7 @@ class Prey(Character):
 
     def updateStamina(self):
         """Updates the stamina of the prey each frame according to its current speed."""
-        return super().updateStamina(mv.PREY_STAMINA_SPEED_THRESHOLD, mv.PREY_STAMINA_FACTOR)
+        return super().updateStamina(mv.PREY_MAX_SPEED * 0.5, mv.STAMINA_FACTOR, mv.PREY_MAX_STAMINA)
 
     def getObservations(self):
         """Overrides Character's getObservations"""

@@ -57,7 +57,7 @@ class Character(metaclass = ABCMeta):
     
 
     @abstractmethod
-    def updateStamina(self, threshold, staminaFactor):
+    def updateStamina(self, threshold, staminaFactor, maxStamina):
         """Updates the stamina of the character according to its current speed.
         Prey, Predator should override this with their specific threshholds and staminaFactors
         Inputs:
@@ -66,8 +66,10 @@ class Character(metaclass = ABCMeta):
             increases otherwise
             staminaFactor: the number by which to multiply the difference between speed and 
             threshold by to get stamina change"""
-        change = staminaFactor * (threshold - self.speed)
+        change = staminaFactor * (threshold - self.speed) / threshold
         self.stamina = self.stamina + change
+        if self.stamina > maxStamina:
+            self.stamina = maxStamina
 
     @abstractmethod
     def eatFood(self):

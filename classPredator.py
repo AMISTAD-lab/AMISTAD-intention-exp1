@@ -46,7 +46,10 @@ class Predator(Character):
 
     def updateStamina(self):
         """Updates the stamina of the predator each frame according to its current speed."""
-        return super().updateStamina(mv.PREY_STAMINA_SPEED_THRESHOLD, mv.PREDATOR_STAMINA_FACTOR)
+        if self.lastTargetedPrey == None:
+            return super().updateStamina(mv.PREDATOR_MAX_SPEED * 0.5, mv.STAMINA_FACTOR, mv.PREDATOR_MAX_STAMINA)
+        else:
+            return super().updateStamina(mv.PREDATOR_TARGET_SPEED * 0.5, mv.STAMINA_FACTOR, mv.PREDATOR_MAX_STAMINA)
 
     def takeAction(self, observationList):
         # decrement hunger

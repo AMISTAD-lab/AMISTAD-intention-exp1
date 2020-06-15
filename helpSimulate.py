@@ -26,6 +26,28 @@ objIDToObject = {} #maps object IDs to objects
 
 data = {} # data dictionary for a single run
 
+
+def printProgressBar (iteration, total, prefix = 'Progress:', suffix = 'Complete', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = printEnd)
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
+
 def createSimInput(variableTupleList, fileName="inputFile.txt"):
     """ Called from command line, gives our program the parameters to run the simulation on
     Inputs:
@@ -115,18 +137,21 @@ def createSeedListFromFile(filename):
 
 def simulateManySetups(numSimulations, maxSteps, shouldMakeScript, seedList):
     allData = []
-    for i in range(len(seedList)):
-        print("STARTED SEED", i)
-        allData.append(batchSimulate(numSimulations, maxSteps, shouldMakeScript, seedList[i]))
+    numSeeds = len(seedList)
+    for i in range(numSeeds):
+        #print("STARTED SEED", i)
+        allData.append(batchSimulate(numSimulations, maxSteps, shouldMakeScript, seedList[i], [True, i, numSeeds]))
     return allData
 
-def batchSimulate(numSimulations, maxSteps, shouldMakeScript, preferences):
+def batchSimulate(numSimulations, maxSteps, shouldMakeScript, preferences, manySetups=[False,0,0]):
     """runs simulate many times"""
     batchData = copy.deepcopy(preferences) # holds runData, as well as averages for each set of parameters
     runsData = [] # holds data dictionaries for runs with a given set of parameters. (greater number of runs = greater precision)
     for i in range(numSimulations):
-        print("STARTED TRIAL", i)
+        #print("STARTED TRIAL", i)            
         runsData.append(simulate(maxSteps, shouldMakeScript, preferences))
+        if manySetups[0]:
+            printProgressBar((i+1) + (manySetups[1] * numSimulations), numSimulations * manySetups[2])
     batchData["runsData"] = runsData 
     addAverages(batchData) 
     return batchData
@@ -184,7 +209,7 @@ def startSimulation():
     hsc.script.append([])
     hsc.maxID[0] = 0
     #start simulation
-    p.connect(p.DIRECT)
+    p.connect(p.GUI)
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     terrain = Terrain(mv.TERRAIN_SIZE)
     spawnPrey(mv.PREY_START_COUNT)
@@ -196,6 +221,7 @@ def updateSimulation():
     updateFood()
     updatePrey()
     updatePredators()
+    print(predatorList[0].stamina)
     nextStep()
     global frameCount
     frameCount += 1
@@ -207,13 +233,13 @@ def endSimulation(shouldMakeScript):
         data["foodPerPrey"].append(prey.foodTimeStamps)
     for predator in predatorList:
         data["preyPerPred"].append(predator.preyTimeStamps)
-    print("SIMULATION COMPLETE (" + str(frameCount) + " steps)")
+    #print("SIMULATION COMPLETE (" + str(frameCount) + " steps)")
     data["stepCount"] = frameCount
     data["survivingPrey"] = len(preyList)
     if shouldMakeScript:
         data["scriptList"] = copy.deepcopy(hsc.script)
         hsc.makeScript()
-        print("SCRIPT GENERATED")
+        #print("SCRIPT GENERATED")
 
 def nextStep():
     """carries out the next step in the simulation and info to unity code

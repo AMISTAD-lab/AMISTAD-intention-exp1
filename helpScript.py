@@ -89,6 +89,7 @@ def makeScript():
     masterScript.write(makeMethodArr)
     #write start method which initializes prefabs
     masterScript.write("void Start()\n{\n")
+    masterScript.write("Cursor.visible = false;\n")
     masterScript.write("transform.position = new Vector3(0f,8f,0f);")
     masterScript.write('predator = (GameObject) Resources.Load("Predator");\n')
     masterScript.write('prey = (GameObject) Resources.Load("Prey");\n')

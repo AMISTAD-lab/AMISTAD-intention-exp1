@@ -239,7 +239,7 @@ def startSimulation():
     hsc.script.append([])
     hsc.maxID[0] = 0
     #start simulation
-    p.connect(p.GUI)
+    p.connect(p.DIRECT)
     p.setAdditionalSearchPath(pybullet_data.getDataPath())
     terrain = Terrain(mv.TERRAIN_SIZE)
     spawnPrey(mv.PREY_START_COUNT)

@@ -49,7 +49,12 @@ def printProgressBar (iteration, total, prefix = 'Progress:', suffix = 'Complete
         print()
 
 
-def createExpInputFile():
+def createExpInputFile(inputsToVary):
+    """Inputs:
+    inputsToVary: the list of inputs (of type string) to vary. 
+        eg. ["preySightDistance", "predSightDistance"] runs both 
+            "preySightDistance" and "predSightDistance" linearly.
+    """
     filename = "experimentInput.txt"
     file = open(filename, "w")
     for targetedAware in [True, False]:
@@ -58,27 +63,28 @@ def createExpInputFile():
             saveToWrite = toWrite
             toWrite += "proximityAware " + str(proximityAware) + "\n"
             if not (targetedAware and not proximityAware):
-
-                for preySightDistance in range(5, 50+1, 5):
-                    file.write(toWrite)
-                    file.write("preySightDistance " + str(preySightDistance) + "\n\n")
-
-                for predSightDistance in range(5, 50+1, 5):
-                    file.write(toWrite)
-                    file.write("predSightDistance " + str(predSightDistance) + "\n\n")
-
-                for predSightAngle in range(60, 120+1, 10):
-                    file.write(toWrite)
-                    file.write("predSightAngle " + str(predSightAngle) + "\n\n")
-
-                for predPreyRatio in range(1, 10+1, 1):
-                    file.write(toWrite)
-                    file.write("predPreyRatio " + str(predPreyRatio) + "\n\n")
-
-                for speedFrac in range(5, 15+1, 1):
-                    speedFrac /= 10 #hacky ik
-                    file.write(toWrite)
-                    file.write("speedFrac " + str(speedFrac) + "\n\n")
+                #print("preySightDistance" in inputsToVary)
+                if "preySightDistance" in inputsToVary:
+                    for preySightDistance in range(5, 50+1, 5):
+                        file.write(toWrite)
+                        file.write("preySightDistance " + str(preySightDistance) + "\n\n")
+                if "predSightDistance" in inputsToVary:
+                    for predSightDistance in range(5, 50+1, 5):
+                        file.write(toWrite)
+                        file.write("predSightDistance " + str(predSightDistance) + "\n\n")
+                if "predSightAngle" in inputsToVary:
+                    for predSightAngle in range(60, 120+1, 10):
+                        file.write(toWrite)
+                        file.write("predSightAngle " + str(predSightAngle) + "\n\n")
+                if "predPreyRatio" in inputsToVary:
+                    for predPreyRatio in range(1, 10+1, 1):
+                        file.write(toWrite)
+                        file.write("predPreyRatio " + str(predPreyRatio) + "\n\n")
+                if "speedFrac" in inputsToVary:
+                    for speedFrac in range(5, 15+1, 1):
+                        speedFrac /= 10 #hacky ik
+                        file.write(toWrite)
+                        file.write("speedFrac " + str(speedFrac) + "\n\n")
 
             toWrite = saveToWrite
     file.close() 

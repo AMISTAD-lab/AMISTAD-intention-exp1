@@ -28,7 +28,7 @@ standardSeedCopy = {
 parser = argparse.ArgumentParser()
 parser.add_argument("outputFileName", type=str, help="Input the csv file name to output to here. Include the .csv")
 #parser.add_argument('-l','--list', type=str, dest="inputsToVary", nargs='+', help='<Required> Set flag', required=True)
-parser.add_argument("inputsToVary", help="Input a list of strings, each of which is a variable to vary")
+parser.add_argument("inputsToVary", type=list, help="Input a list of strings, each of which is a variable to vary")
 parser.add_argument("numSimulations", type=int, help="number of simulations to go through for each combination of variables")
 parser.add_argument("maxSteps", type=int, help="maximum number of steps for each simulation")
 parser.add_argument("shouldMakeScript", type=bool, help="Boolean, True if should generate Unity Script, False otherwise. ")

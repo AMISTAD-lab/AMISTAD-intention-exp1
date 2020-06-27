@@ -162,8 +162,10 @@ def createSeedListFromFile(filename):
         else:
             key, value = line.split()
             if key in preferences:
-                if value in ["True","False"]:
-                    preferences[key] = bool(value)
+                if value == "True":
+                    preferences[key] = True
+                elif value == "False":  
+                    preferences[key] = False
                 else:
                     preferences[key] = float(value)
             else:

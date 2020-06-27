@@ -164,7 +164,7 @@ def redefineMagicVariables(preferences):
     IS_PROXIMITY_AWARE = preferences["proximityAware"]
 
     global PREY_START_COUNT
-    PREY_START_COUNT = PREDATOR_START_COUNT * preferences["preyPredRatio"]
+    PREY_START_COUNT = PREDATOR_START_COUNT * int(preferences["preyPredRatio"])
     
     global FOOD_MAX_COUNT
     FOOD_MAX_COUNT = PREY_START_COUNT 

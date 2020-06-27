@@ -76,10 +76,10 @@ def createExpInputFile(inputsToVary):
                     for predSightAngle in range(60, 120+1, 10):
                         file.write(toWrite)
                         file.write("predSightAngle " + str(predSightAngle) + "\n\n")
-                if "predPreyRatio" in inputsToVary:
-                    for predPreyRatio in range(1, 10+1, 1):
+                if "preyPredRatio" in inputsToVary:
+                    for preyPredRatio in range(1, 10+1, 1):
                         file.write(toWrite)
-                        file.write("predPreyRatio " + str(predPreyRatio) + "\n\n")
+                        file.write("preyPredRatio " + str(preyPredRatio) + "\n\n")
                 if "speedFrac" in inputsToVary:
                     for speedFrac in range(5, 15+1, 1):
                         speedFrac /= 10 #hacky ik

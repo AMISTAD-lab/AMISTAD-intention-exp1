@@ -49,11 +49,13 @@ def printProgressBar (iteration, total, prefix = 'Progress:', suffix = 'Complete
         print()
 
 
-def createExpInputFile(inputsToVary):
+def createExpInputFile(inputToVary, startValue, endValue, stepValue):
     """Inputs:
-    inputsToVary: the list of inputs (of type string) to vary. 
-        eg. ["preySightDistance", "predSightDistance"] runs both 
-            "preySightDistance" and "predSightDistance" linearly.
+        inputToVary: String, the input to vary. 
+            eg. "predSightDistance"
+        startValue: the starting value of input, inclusive
+        endingValue: the ending value of input, inclusive
+        stepValue: the stepValue for input
     """
     filename = "experimentInput.txt"
     file = open(filename, "w")
@@ -64,27 +66,29 @@ def createExpInputFile(inputsToVary):
             toWrite += "proximityAware " + str(proximityAware) + "\n"
             if not (targetedAware and not proximityAware):
                 #print("preySightDistance" in inputsToVary)
-                if "preySightDistance" in inputsToVary:
-                    for preySightDistance in range(5, 50+1, 5):
+                if (inputToVary == "preySightDistance"):
+                    for preySightDistance in range(startValue, endValue+1, stepValue):
                         file.write(toWrite)
                         file.write("preySightDistance " + str(preySightDistance) + "\n\n")
-                if "predSightDistance" in inputsToVary:
-                    for predSightDistance in range(5, 50+1, 5):
+                elif (inputToVary == "predSightDistance"):
+                    for predSightDistance in range(startValue, endValue+1, stepValue):
                         file.write(toWrite)
                         file.write("predSightDistance " + str(predSightDistance) + "\n\n")
-                if "predSightAngle" in inputsToVary:
-                    for predSightAngle in range(60, 120+1, 10):
+                elif (inputToVary == "predSightAngle"):
+                    for predSightAngle in range(startValue, endValue+1, stepValue):
                         file.write(toWrite)
                         file.write("predSightAngle " + str(predSightAngle) + "\n\n")
-                if "preyPredRatio" in inputsToVary:
-                    for preyPredRatio in range(1, 10+1, 1):
+                elif (inputToVary == "preyPredRatio"):
+                    for preyPredRatio in range(startValue, endValue+1, stepValue):
                         file.write(toWrite)
                         file.write("preyPredRatio " + str(preyPredRatio) + "\n\n")
-                if "speedFrac" in inputsToVary:
-                    for speedFrac in range(5, 15+1, 1):
+                elif (inputToVary == "speedFrac"):
+                    for speedFrac in range(startValue, endValue+1, stepValue):
                         speedFrac /= 10 #hacky ik
                         file.write(toWrite)
                         file.write("speedFrac " + str(speedFrac) + "\n\n")
+                else:
+                    print("ERROR: Invalid inputToVary.")
 
             toWrite = saveToWrite
     file.close() 

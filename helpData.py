@@ -106,6 +106,7 @@ def survivalGraphFromCSV(filename, groupParam):
     plt.legend()
     plt.show()
 
+
 def strToNumList(listStr):
     listStr = listStr.replace(" ","")
     listStr = listStr.strip("[]")

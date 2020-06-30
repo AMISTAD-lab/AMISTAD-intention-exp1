@@ -22,6 +22,8 @@ import helpSimulate as hsm
 import helpData as hd
 import csv
 import argparse # allow for command line inputs
+import os.path
+from os import path
 
 standardSeedCopy = {
         "targetedAware" : True,
@@ -36,7 +38,6 @@ standardSeedCopy = {
 
 parser = argparse.ArgumentParser()
 parser.add_argument("outputFileName", type=str, help="Input the csv file name to output to here. Include the .csv")
-#parser.add_argument('-l','--list', type=str, dest="inputsToVary", nargs='+', help='<Required> Set flag', required=True)
 parser.add_argument("inputToVary", type=str, help="Input a list of strings, each of which is a variable to vary")
 parser.add_argument("startValue", type=int, help="The starting value for the varied parameter")
 parser.add_argument("endValue", type=int, help="The ending value for the varied parameter")
@@ -44,6 +45,8 @@ parser.add_argument("stepValue", type=int, help="The step value for the varied p
 parser.add_argument("numSimulations", type=int, help="number of simulations to go through for each combination of variables")
 parser.add_argument("maxSteps", type=int, help="maximum number of steps for each simulation")
 parser.add_argument("shouldMakeScript", type=bool, help="Boolean, True if should generate Unity Script, False otherwise. ")
+parser.add_argument("--append", action='store_true', help="Include if appending to outputFileName.")
+
 args = parser.parse_args()
 
 outputFileName = args.outputFileName
@@ -54,6 +57,7 @@ stepValue = args.stepValue
 numSimulations = args.numSimulations
 maxSteps = args.maxSteps
 shouldMakeScript = args.shouldMakeScript
+shouldAppend = args.append
 
 print("inputToVary is " + str(inputToVary))
 
@@ -67,10 +71,18 @@ def runExperiment(outputFileName, inputToVary, startValue, endValue, stepValue, 
         numSimulatons:  number of simulations to go through for each combination of variables
         maxSteps:  maximum number of steps for each simulation
         shouldMakeScript: Boolean, True if should generate Unity Script, False otherwise. """
+    # make sure the file we are trying to append to exists!
+    if (shouldAppend and not path.exists(outputFileName)):
+        print("ERROR: No file named " + outputFileName)
+        return;
+
     inputFileName = hsm.createExpInputFile(inputToVary, startValue, endValue, stepValue)
     seedList = hsm.createSeedListFromFile(inputFileName)
     data = hsm.simulateManySetups(numSimulations, maxSteps, shouldMakeScript, seedList)
-    hd.allDataToCSV(data, outputFileName)
+    if shouldAppend:
+        hd.appendDataToCSV(data, outputFileName)
+    else:
+        hd.allDataToCSV(data, outputFileName)
 
 
 runExperiment(outputFileName, inputToVary, startValue, endValue, stepValue, numSimulations, maxSteps, shouldMakeScript)

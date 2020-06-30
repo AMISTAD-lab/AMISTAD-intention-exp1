@@ -2,7 +2,7 @@
 Now we just need to run this! 
 
 Run:
-python simulation.py {csv file name} {parameter to vary} {startValue} {endValue} {stepValue} {num simulations} {maxSteps} {shouldMakeScript}
+python simulation.py {csv file name} {parameter to vary} {startValue} {endValue} {stepValue} {num simulations} {maxSteps} {shouldMakeScript} {--append}
 
 Example:
 python simulation.py "outputTest.csv" "preySightDistance" 5 50 5 1 10 True
@@ -13,7 +13,8 @@ Note: Planned ranges are:
 "predSightDistance": 5 to 50, step 5
 "predSightAngle": 60 to 120, step 10
 "preyPredRatio": 5 to 15, step 1
-"speedFrac": 5 to 15, step 1
+
+"speedFrac": 0 to 20, step 1
 (all ranges are inclusive)
 """
 

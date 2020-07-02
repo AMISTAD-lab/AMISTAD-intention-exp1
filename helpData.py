@@ -6,6 +6,22 @@ import numpy as np
 import statistics as stats
 import math as m
 
+
+def combineCSVs(fileNameToCreate, csvFileNameList):
+    """Combines the specified csv files into one big csv file.
+    Inputs:
+        fileNameToCreate: the file name for the combined csvs
+        csvFolderName: the name of the folder that contains all the csvs to be 
+        appended."""
+    dfList = []
+    for fileName in csvFileNameList:
+        df = pd.read_csv(fileName, header=0, index_col=None)
+        dfList.append(df)
+    resultDf = pd.concat(dfList) # concatenate dataframe versions of csv
+    resultDf.to_csv(fileNameToCreate, index=False)
+    return resultDf, dfList
+
+
 # SCRIPTS SHOULD HAVE A UNIQUE NAME OPTION AND BE APPENDED TO THE DATA DICTIONARY
 
 def allDataToCSV(allData, filename):

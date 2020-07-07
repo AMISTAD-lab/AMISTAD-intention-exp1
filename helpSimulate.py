@@ -93,7 +93,7 @@ def createExpInputFile(inputToVary, startValue, endValue, stepValue):
             toWrite = saveToWrite
     file.close() 
     return filename                     
-    
+
 
 def createSimInput(variableTupleList, fileName="inputFile.txt"):
     """ Called from command line, gives our program the parameters to run the simulation on

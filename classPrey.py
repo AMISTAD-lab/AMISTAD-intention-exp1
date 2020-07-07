@@ -66,7 +66,7 @@ class Prey(Character):
             yawAndAngleArray = alg.genRandFromContinuousDist(alg.probPreyDirection, 0, mv.FULL_CIRCLE, mv.PREY_DECISION_BIN_NUM, self.objID, observationList[1], observationList[2])
             self.yaw = m.radians(yawAndAngleArray[0])
     
-            if self.isTargeted:
+            if self.isTargeted and mv.IS_TARGETED_AWARE:
                 if self.isTired:
                     self.speed = mv.PREY_TIRED_SPEED                
                 else:

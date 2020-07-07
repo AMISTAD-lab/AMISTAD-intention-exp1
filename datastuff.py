@@ -21,7 +21,7 @@ def linearRunGraph(filename, param):
     df2 = filterDataFrame(data, [["targetedAware", False], ["proximityAware", False]])
 
     dfs = [df0, df1, df2]
-    modes = [r"Fully Aware", r"Proximity Only", r"Unaware"]
+    modes = [r"Proximity + Attention", r"Proximity Only", r"Unaware"]
 
     colorIter = iter(['#4FADAC', '#5386A6', '#2F5373'])
     
@@ -54,12 +54,12 @@ def linearRunGraph(filename, param):
     ax = plt.gca()
     ax.set(ylim=(0, 10000))
     ax.set_ylabel(r"prey lifespan (time steps)")
-    ax.set_xlabel(r"predator sight distance")
+    ax.set_xlabel(r"prey-predator ratio")
     ax.tick_params(axis='both', which='major', labelsize=9, direction='in')
     plt.legend()
-    plt.title(r"Prey Lifespan vs Predator Sight Distance")
+    plt.title(r"Prey Lifespan vs Prey-Predator Ratio")
     plt.rc('text', usetex=True)
     plt.show()
 
 
-linearRunGraph("predsd.csv", "predSightDistance")
+linearRunGraph("ppratio.csv", "preyPredRatio")

@@ -74,8 +74,7 @@ def runExperiment(outputFileName, inputToVary, startValue, endValue, stepValue, 
         shouldMakeScript: Boolean, True if should generate Unity Script, False otherwise. """
     # make sure the file we are trying to append to exists!
     if (shouldAppend and not path.exists(outputFileName)):
-        print("ERROR: No file named " + outputFileName)
-        return;
+        raise Exception("ERROR: No file named " + outputFileName)
 
     inputFileName = hsm.createExpInputFile(inputToVary, startValue, endValue, stepValue)
     seedList = hsm.createSeedListFromFile(inputFileName)

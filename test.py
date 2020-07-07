@@ -1,6 +1,6 @@
 standardSeed = {
-        "targetedAware" : False,
-        "proximityAware" : False,
+        "targetedAware" : True,
+        "proximityAware" : True,
         "preyPredRatio" : 4,
         "preySightDistance" : 10,
         "predSightDistance" : 20,

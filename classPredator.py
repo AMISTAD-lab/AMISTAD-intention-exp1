@@ -100,7 +100,10 @@ class Predator(Character):
         
         # target the target, then set speed/direction to lock onto prey
         pickedPrey = hsm.objIDToObject[pickedPreyID]
-        pickedPrey.isTargeted = True
+        
+        if alg.calcDistance(self.pos, pickedPrey.pos) < mv.PREY_SIGHT_DISTANCE: #make sure prey should actually know
+            pickedPrey.isTargeted = True
+        
         self.lockOntoPrey(pickedPrey.pos)
 
         # set variable

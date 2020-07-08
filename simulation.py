@@ -2,20 +2,18 @@
 Now we just need to run this! 
 
 Run:
-python simulation.py {csv file name} {parameter to vary} {startValue} {endValue} {stepValue} {num simulations} {maxSteps} {shouldMakeScript} {--append}
+python simulation.py {csv file name} {parameter to vary} {startValue} {endValue} {stepValue} {num simulations} {maxSteps} {--script} {--append} 
 
 Example:
-python simulation.py "outputTest.csv" "preySightDistance" 5 50 5 1 10 True
+python simulation.py "outputTest.csv" "preySightDistance" 1 51 5 100 10000
+(does not generate script, does not append.)
 
-Note: Planned ranges are:
+Note: The program should print out all the values you inputted. Please
+check to make sure these are correct! And, wait for a progress bar before
+detatching from the screen. 
 
-"preySightDistance": 5 to 50, step 5
-"predSightDistance": 5 to 50, step 5
-"predSightAngle": 60 to 120, step 10
-"preyPredRatio": 5 to 15, step 1
-
-"speedFrac": 0 to 20, step 1
-(all ranges are inclusive)
+Note: "ERROR: No file named " + outputFileName" probably means you mistyped the file to 
+append to.
 """
 
 
@@ -45,7 +43,7 @@ parser.add_argument("endValue", type=int, help="The ending value for the varied 
 parser.add_argument("stepValue", type=int, help="The step value for the varied parameter")
 parser.add_argument("numSimulations", type=int, help="number of simulations to go through for each combination of variables")
 parser.add_argument("maxSteps", type=int, help="maximum number of steps for each simulation")
-parser.add_argument("shouldMakeScript", type=bool, help="Boolean, True if should generate Unity Script, False otherwise. ")
+parser.add_argument("--script", action='store_true', help="Include if should generate Unity Script.")
 parser.add_argument("--append", action='store_true', help="Include if appending to outputFileName.")
 
 args = parser.parse_args()
@@ -57,10 +55,18 @@ endValue = args.endValue
 stepValue = args.stepValue
 numSimulations = args.numSimulations
 maxSteps = args.maxSteps
-shouldMakeScript = args.shouldMakeScript
+shouldMakeScript = args.script
 shouldAppend = args.append
 
+print("outputFileName is", outputFileName)
 print("inputToVary is " + str(inputToVary))
+print("startValue is", startValue)
+print("endValue is", endValue)
+print("stepValue is", stepValue)
+print("numSimulations (per seed) is", numSimulations)
+print("maxSteps (per simulation) is", maxSteps)
+print("shouldMakeScript is " + str(shouldMakeScript))
+print("shouldAppend is " + str(shouldAppend))
 
 
 def runExperiment(outputFileName, inputToVary, startValue, endValue, stepValue, numSimulations, maxSteps, shouldMakeScript):

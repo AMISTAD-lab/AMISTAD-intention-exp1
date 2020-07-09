@@ -26,7 +26,6 @@ def getNewPreyCountOverTimeList(foodPerPreyList, preyCountOverTimeList, preyPerP
         preyCountOverTimeList: The preyCountOverTimeList for a single run.
         preyPerPredList: The preyPerPredList for a single run. Allows us to determine when prey die.
         numTimeStep: the number of steps we consider to be starve"""
-    #print("foodPerPreyList is", foodPerPreyList)
     foodPerPreyList = ast.literal_eval(foodPerPreyList) # convert to list type
     preyCountOverTimeList = ast.literal_eval(preyCountOverTimeList)
     preyPerPredList = ast.literal_eval(preyPerPredList)
@@ -41,10 +40,8 @@ def getNewPreyCountOverTimeList(foodPerPreyList, preyCountOverTimeList, preyPerP
             prevEatTimeStep = preyFoodList[0][0] # Initialize this to the first timestep the prey ate. 
             # loop through each time step for a given prey (until prey dies of hunger :( )
             while (timeStepIndex < len(preyFoodList) and not isPreyStarved):
-                #print("preyFoodList[timeStepIndex] is", preyFoodList[timeStepIndex])
                 currentTimeStep = preyFoodList[timeStepIndex][0]
-                #print("currentTimeStep is", currentTimeStep)
-                isPreyStarved = currentTimeStep - prevEatTimeStep > numTimeStep
+                isPreyStarved = (currentTimeStep - prevEatTimeStep) > numTimeStep
                 if isPreyStarved: # revise prey count list
                     if len(preyEatenTimestamps) == 0: # if prey was never eaten, set this time step to the last possible time step.
                         preyEatenTimeStep = len(preyCountOverTimeList) - 1
@@ -67,10 +64,8 @@ def revisePreyCountList(preyCountList, preyStarvedTimeStep, preyEatenTimeStep):
         newPreyCountList: list, the new preyCountList
     """
     if preyStarvedTimeStep < preyEatenTimeStep:
-        print("decreasing starting at timestep", preyStarvedTimeStep)
         for timeStep in range(preyStarvedTimeStep, preyEatenTimeStep + 1): # the +1 is because the prey count is not decremented on the exact frame that a prey is eaten.
             preyCountList[timeStep] -= 1
-    
     return preyCountList
 
 
@@ -79,13 +74,10 @@ def getPreyEatenTimestamps(preyPerPredList):
     Inputs:
         preyPerPredList: the list of predators, with the time stamps at which they eat prey."""
     timeStepList = []
-    timeStepIndex = 0
-    for preyList in preyPerPredList:
-        if len(preyPerPredList) != 0:
-            while(timeStepIndex < len(preyList)):
-                currentTimeStep = preyList[timeStepIndex][0]
-                timeStepList.append(currentTimeStep)
-                timeStepIndex += 1
+    for predList in preyPerPredList:
+        for eatenList in predList:
+            currentTimeStep = eatenList[0]
+            timeStepList.append(currentTimeStep)
     return timeStepList
     
             
@@ -99,14 +91,8 @@ def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
     preyList = df["foodPerPrey"][rowNum]
     preyCountOverTimeList = df["preyCountOverTime"][rowNum]
     preyPerPredList = df["preyPerPred"][rowNum]
-    print("old preyCountOverTimeList is", preyCountOverTimeList)
-    print("new preyCountOverTimeList is", getNewPreyCountOverTimeList(preyList, preyCountOverTimeList, preyPerPredList, numTimeStep))
+    #print("old preyCountOverTimeList is\n", preyCountOverTimeList)
+    newList = getNewPreyCountOverTimeList(preyList, preyCountOverTimeList, preyPerPredList, numTimeStep)
+    #print("new preyCountOverTimeList is\n", newList)
 
-
-def strToNumList(listStr):
-    listStr = listStr.replace(" ","")
-    listStr = listStr.strip("[]")
-    listNum = [int(num) for num in listStr.split(",")]
-    return listNum
-
-testGetNewPreyCountOverTimeList("spdfrac.csv", 0, 1000)
+testGetNewPreyCountOverTimeList("spdfrac.csv", 0, 2000)

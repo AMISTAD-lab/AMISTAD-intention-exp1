@@ -62,4 +62,4 @@ def linearRunGraph(filename, param):
     plt.show()
 
 
-linearRunGraph("ppratio.csv", "preyPredRatio")
+#linearRunGraph("ppratio.csv", "preyPredRatio")

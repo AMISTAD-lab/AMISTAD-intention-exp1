@@ -10,7 +10,7 @@ Brainstorm: Things to analyze with hunger:
 - 
 
 Todo:
-- make graph work with latex
+- make graph work with latex (I DID IT! *on windows* -kevin)
 - For genEatenStarvedRatioGraph(filename, numTimeStep, paramIn=None):, make it work without parameters.
 
 """
@@ -20,9 +20,20 @@ import pandas as pd
 import ast
 import datastuff as ds # imports filterList method
 import matplotlib.pyplot as plt
+from matplotlib import rc
+
+def getPerceptionTierDataframes(filename):
+    """Takes in a csv file and returns data frames according to perception tiers """
+    data = pd.read_csv(filename)
+    df0 = ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True]])
+    df1 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", True]])
+    df2 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", False]])
+    dfs = [df0, df1, df2]
+    modes = [r"Proximity + Attention", r"Proximity Only", r"Unaware"]
+    return modes, dfs
 
 def avgFoodPerPrey(filename, paramVary):
-    """returns a list of average food per prey based on perception tier
+    """prints a graph varying foodperprey with another parameter
     filename = csv file
     param = param to vary
     """
@@ -36,60 +47,24 @@ def avgFoodPerPrey(filename, paramVary):
         for param, dataframe in df.groupby(paramVary):
             paramList.append(param)
             preyList = dataframe["foodPerPrey"]
-            superTotal = 0
+            superTotal = 0 #
             superEatPrey = 0
             for run in dataframe.index:
                 foodPerPreyList = ast.literal_eval(preyList[run])
                 eatPrey = len(foodPerPreyList)
                 noEatPrey = countEmptyList(foodPerPreyList, True)
                 totalPrey = eatPrey + noEatPrey
-                superTotal += totalPrey
+                superTotal += totalPrey #
                 superEatPrey += eatPrey
             avgNumList.append(superTotal / superEatPrey)
         xValList.append(paramList)
         yValList.append(avgNumList)
     print("xValList is", xValList)
     print("yValList is", yValList)
-    plotPerceptionLineGraph(xValList, yValList, modes, paramVary, "average number of food eaten by prey", "preySightDistance" )    
-    #return avgNum
-
-
-
-    """
-def avgFoodPerPrey(filename, paramVary):
-    returns a list of average food per prey based on perception tier
-
-    filename = csv file
-    param = param to vary
-    
-    modes, dfs = getPerceptionTierDataframes(filename)
-    avgNum = []
-    for i in range (3):
-        df = dfs[i]
-        paramList = []
-        for param, dataframe in df.groupby(paramVary):
-            paramList.append(param)
-            preyList = df["foodPerPrey"]
-            superTotal = 0
-            superEatPrey = 0
-            for run in df.index:
-                foodPerPreyList = ast.literal_eval(preyList[run])
-                eatPrey = len(foodPerPreyList)
-                noEatPrey = countEmptyList(foodPerPreyList, True)
-                totalPrey = eatPrey + noEatPrey
-                superTotal += totalPrey
-                superEatPrey += eatPrey
-        avgNum.append(superTotal / superEatPrey)
-    
-    plotPerceptionLineGraph(avgNum, paramList, modes, paramVary, "average number of food eaten by prey", "preySightDistance" )    
-    return avgNum
-    """
-
-def preyEatTime(filename):
-    ...
+    plotPerceptionLineGraph(xValList, yValList, modes, paramVary, r"average # of food eaten per prey", " " )    
 
 def countEmptyList(inputList, isOuterList = True):
-    "helper method for avgFoodPerPrey, takes in a list and count all the empty lists inside it"
+    """helper method for avgFoodPerPrey, takes in a list and count all the empty lists inside it"""
     if inputList == []:
         if isOuterList:
             return 0
@@ -99,16 +74,6 @@ def countEmptyList(inputList, isOuterList = True):
         return sum(countEmptyList(item, False) for item in inputList) 
     else:
         return 0
-
-def getPerceptionTierDataframes(filename):
-    """Takes in a csv file and returns data frames according to perception tiers """
-    data = pd.read_csv(filename)
-    df0 = ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True]])
-    df1 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", True]])
-    df2 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", False]])
-    dfs = [df0, df1, df2]
-    modes = [r"Proximity + Attention", r"Proximity Only", r"Unaware"]
-    return modes, dfs
 
 def plotPerceptionLineGraph(xValList, yValList, modes, xlabel, ylabel, title):
     """ Plots a line graph with 3 lines, one for each intention mode. The lines themselves vary
@@ -120,6 +85,7 @@ def plotPerceptionLineGraph(xValList, yValList, modes, xlabel, ylabel, title):
         xlabel: String, The parameter we are varying
         ylabel: String, the value
         title: String, The title of the graph"""
+    plt.style.use('ggplot')
     colorIter = iter(['#4FADAC', '#5386A6', '#2F5373'])
     for lineNum in range(len(xValList)):
         color = next(colorIter)
@@ -132,7 +98,7 @@ def plotPerceptionLineGraph(xValList, yValList, modes, xlabel, ylabel, title):
     ax.tick_params(axis='both', which='major', labelsize=9, direction='in')
     plt.legend()
     plt.title("" + title)
-    #plt.rc('text', usetex=True)
+    plt.rc('text', usetex=True)
     plt.show()
     
 
@@ -260,7 +226,6 @@ def getPreyEatenTimestamps(preyPerPredList):
             timeStepList.append(currentTimeStep)
     return timeStepList
     
-            
 
 
 def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
@@ -277,5 +242,5 @@ def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
     #print("new preyCountOverTimeList is\n", newList)
 
 #testGetNewPreyCountOverTimeList("spdfrac.csv", 0, 2000)
-avgFoodPerPrey("spdfrac.csv", paramVary = "speedFrac")
+#avgFoodPerPrey("spdfrac.csv", paramVary = "speedFrac")
 #genEatenStarvedRatioGraph("spdfrac.csv", 1000, paramIn="speedFrac")

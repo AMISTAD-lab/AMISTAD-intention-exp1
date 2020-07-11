@@ -373,7 +373,7 @@ def collectTargetInfo():
             recentTarget = prey.targetList[i]
             lastTargeted = len(recentTarget) - 1
             recentTarget += [0]*(frameCount - 1 - lastTargeted) + [1]
-
+ 
     # make list of targeted prey
     #for predator, predator.lastTargetedPrey
     #prey = objIDToObject[predator.lastTargetedPrey]

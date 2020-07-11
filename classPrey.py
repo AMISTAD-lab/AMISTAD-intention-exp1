@@ -14,7 +14,7 @@ class Prey(Character):
         self.isEaten = False    # True if predator has eaten this prey, False otherwise
         self.foodTimeStamps = []
         self.isTargeted = False
-        self.targetList = [[],[],[],[],[]]
+        self.targetList = [[],[],[],[],[]] #new
         p.setCollisionFilterGroupMask(self.objID, -1, mv.PREY_GROUP, mv.PREY_MASK)
 
 

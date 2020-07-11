@@ -263,6 +263,7 @@ def updateSimulation():
     updateFood()
     updatePrey()
     updatePredators()
+    collectTargetInfo()
     nextStep()
     global frameCount
     frameCount += 1
@@ -363,3 +364,34 @@ def destroy(objID):
 
 def addToLineList(line):
     sightLineList.append(line)
+
+def collectTargetInfo():
+    for i in range(len(predatorList)):
+        predator = predatorList[i]
+        if predator.lastTargetedPrey:
+            prey = objIDToObject[predator.lastTargetedPrey]
+            recentTarget = prey.targetList[i]
+            lastTargeted = len(recentTarget) - 1
+            recentTarget += [0]*(frameCount - 1 - lastTargeted) + [1]
+
+    # make list of targeted prey
+    #for predator, predator.lastTargetedPrey
+    #prey = objIDToObject[predator.lastTargetedPrey]
+    #loop thru list of targeted prey
+    #self.targetList = [[],[],[],[],[]]
+    #Target List:
+    # [[0,0,0,0,1,1,1,1,1], [0,0,0,0,0,0,1], [], [], []]
+
+'''
+    fancy measurement thing??? yahhhh
+    so
+    it could be [[] [] [] ... (however many predators, which is always 5)]
+    in each nested list, we store the times at which it was targeted
+    end goal is how long is a prey targeted for and how often
+
+    this method creates information about when a prey is targeted
+    from that, we can look at how many steps it was targeted for
+    and how many times it was targeted
+
+    but this is slightly tricky when prey are targeted by multiple predators
+    because one might start/stop targeting and we need to make sure we have the correct lengths and times'''

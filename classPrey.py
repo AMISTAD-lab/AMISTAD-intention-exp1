@@ -14,6 +14,7 @@ class Prey(Character):
         self.isEaten = False    # True if predator has eaten this prey, False otherwise
         self.foodTimeStamps = []
         self.isTargeted = False
+        self.targetList = [[],[],[],[],[]]
         p.setCollisionFilterGroupMask(self.objID, -1, mv.PREY_GROUP, mv.PREY_MASK)
 
 
@@ -73,6 +74,3 @@ class Prey(Character):
                     self.speed = mv.PREY_MAX_SPEED
             else:
                 self.speed = alg.genCharSpeed(yawAndAngleArray, self.objID, mv.PREY_MAX_SPEED, mv.PREY_TIRED_SPEED, self.stamina, mv.PREY_TIRED_STAMINA, mv.PREY_DECISION_CURRENT_SPEED_FACTOR) # pass in this array so method knows 
-
-
-    

@@ -33,6 +33,7 @@ class Predator(Character):
                     preyEaten += 1
                     hsm.preyList.remove(obj)
                     hsm.data["foodPerPrey"].append(obj.foodTimeStamps)
+                    hsm.targetCounts.append(obj.targetList)
                     hsm.destroy(objID)
                     self.hunger += mv.PREDATOR_INCREMENT_HUNGER
                     if self.hunger > mv.PREDATOR_MAX_HUNGER:

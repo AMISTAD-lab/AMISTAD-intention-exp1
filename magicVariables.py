@@ -1,4 +1,4 @@
-import algorithms as alg
+from algorithms import randSpawnPos
 
 #change prefabs in script (if wanted), no longer drag&link
 prefabToURDF = {
@@ -17,9 +17,9 @@ prefabToURDF = {
 FRAME_RATIO = 1
 UPDATE_FRAME_RATE = 1 # means prey and predator are updated every _____ frame 
 
-PREY_SPAWN_ALG = alg.randSpawnPos
-PREDATOR_SPAWN_ALG = alg.randSpawnPos
-FOOD_SPAWN_ALG = alg.randSpawnPos
+PREY_SPAWN_ALG = randSpawnPos
+PREDATOR_SPAWN_ALG = randSpawnPos
+FOOD_SPAWN_ALG = randSpawnPos
 
 PREDATOR_SIZE = 2
 PREY_SIZE = 1

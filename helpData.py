@@ -154,3 +154,15 @@ def heatMapFromCSV(fileName, groupParam1, groupParam2):
 
     heat_map = sb.heatmap(data, annot=True)
     plt.show()
+
+def avgTargetInfo(targetInfo, graph=False):
+    probList, durationList = targetInfo
+    s_avg, s_std, s_ci = listStats(probList)
+    d_avg, d_std, d_ci = listStats(durationList)
+    if graph:
+        plt.hist(durationList)
+        plt.title("Distribution for Duration of Targeting")
+        plt.xlabel("Duration of Targeting (timesteps")
+        plt.ylabel("Count")
+        plt.show()
+    return s_avg, s_ci, d_avg, d_ci

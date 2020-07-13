@@ -24,6 +24,8 @@ foodList = []
 terrainWallIDs = []
 objIDToObject = {} #maps object IDs to objects
 
+targetCounts = []
+
 data = {} # data dictionary for a single run
 
 
@@ -241,11 +243,12 @@ def initializeData(preferences):
 def startSimulation():
     """connect to pybullet and do initial spawns"""
     #reset variables
-    global frameCount, preyList, predatorList, foodList, terrainWallIDs, objIDToObject
+    global frameCount, preyList, predatorList, foodList, terrainWallIDs, targetCounts, objIDToObject
     frameCount = 0
     preyList = []
     predatorList = []
     foodList = []
+    targetCounts = []
     objIDToObject = {}
     hsc.script.clear()
     hsc.script.append([])
@@ -273,11 +276,13 @@ def endSimulation(shouldMakeScript):
     p.disconnect()
     for prey in preyList:
         data["foodPerPrey"].append(prey.foodTimeStamps)
+        targetCounts.append(prey.targetList)
     for predator in predatorList:
         data["preyPerPred"].append(predator.preyTimeStamps)
     #print("SIMULATION COMPLETE (" + str(frameCount) + " steps)")
     data["stepCount"] = frameCount
     data["survivingPrey"] = len(preyList)
+    data["targetInfo"] = calcTargetInfo()
     if shouldMakeScript:
         data["scriptList"] = copy.deepcopy(hsc.script)
         hsc.makeScript()
@@ -370,17 +375,32 @@ def collectTargetInfo():
         predator = predatorList[i]
         if predator.lastTargetedPrey:
             prey = objIDToObject[predator.lastTargetedPrey]
-            recentTarget = prey.targetList[i]
-            lastTargeted = len(recentTarget) - 1
-            recentTarget += [0]*(frameCount - 1 - lastTargeted) + [1]
- 
-    # make list of targeted prey
-    #for predator, predator.lastTargetedPrey
-    #prey = objIDToObject[predator.lastTargetedPrey]
-    #loop thru list of targeted prey
-    #self.targetList = [[],[],[],[],[]]
-    #Target List:
-    # [[0,0,0,0,1,1,1,1,1], [0,0,0,0,0,0,1], [], [], []]
+            predTargetInfo = prey.targetList[i]
+            lastTargeted = len(predTargetInfo) - 1
+            predTargetInfo += [0]*(frameCount - 1 - lastTargeted) + [1]
+
+def calcTargetInfo():
+    durationInfo = []
+    probTargetInfo = []
+    for preyTargetList in targetCounts:
+        preyTargetInfo = []
+        for predTargetInfo in preyTargetList:
+            targetDuration = 0
+            infoLength = len(predTargetInfo)
+            for i in range(infoLength):
+                timestep = predTargetInfo[i]
+                if timestep == 1:
+                    targetDuration += 1
+                    if i == infoLength - 1:
+                        preyTargetInfo.append(targetDuration)
+                else:
+                    if targetDuration > 0:
+                        preyTargetInfo.append(targetDuration)
+                        targetDuration = 0
+        p = len(preyTargetInfo)/frameCount
+        probTargetInfo.append(p)
+        durationInfo += preyTargetInfo
+    return [probTargetInfo, durationInfo]
 
 
 '''

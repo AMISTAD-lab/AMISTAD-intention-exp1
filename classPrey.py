@@ -73,4 +73,10 @@ class Prey(Character):
                 else:
                     self.speed = mv.PREY_MAX_SPEED
             else:
-                self.speed = alg.genCharSpeed(yawAndAngleArray, self.objID, mv.PREY_MAX_SPEED, mv.PREY_TIRED_SPEED, self.stamina, mv.PREY_TIRED_STAMINA, mv.PREY_DECISION_CURRENT_SPEED_FACTOR) # pass in this array so method knows 
+                self.speed = alg.genCharSpeed(yawAndAngleArray, self.objID, mv.PREY_MAX_SPEED, mv.PREY_TIRED_SPEED, self.stamina, mv.PREY_TIRED_STAMINA, mv.PREY_DECISION_CURRENT_SPEED_FACTOR) # pass in this array so method knows
+
+    # def avgTargets(self):
+    # '''
+    # averages for each of the prey targets' attentions
+    # '''
+    # for i in self.targetList:

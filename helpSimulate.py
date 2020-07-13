@@ -382,6 +382,7 @@ def collectTargetInfo():
     #Target List:
     # [[0,0,0,0,1,1,1,1,1], [0,0,0,0,0,0,1], [], [], []]
 
+
 '''
     fancy measurement thing??? yahhhh
     so

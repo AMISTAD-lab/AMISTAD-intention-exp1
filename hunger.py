@@ -1,25 +1,6 @@
 """hunger.py
 Data analysis methods involving prey hunger.
 
-Brainstorm: Things to analyze with hunger:
-- Average food eaten per prey across different modes of intention.
-    - Maybe graph this against preySightDistance, or something else?
-- ratio of prey eaten by predators to prey dying from hunger. across different modes of intention
-- Possibly?? When prey eat (i.e. graph eating food w/ respect to timestep, 
-    or make a histogram of timesteps at which food is eaten for different intention modes)
-- 
-
-Todo:
-- make graph work with latex (I DID IT! *on windows* -kevin)
-
-Things to fix:
-- figure out why some prey are not starving even when they should after one time step!
-- change method to do different end cases depending on type.
-
-tell prof. george that axis are different
-can easily change to be same.
-check proximity starvation.
-
 NOTE: will need to add latex back in!
 """
 
@@ -134,7 +115,7 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
     #fig.set_size_inches(18, 9)
     axs = axes.flat
     plt.style.use('ggplot')
-    colorList = ['#4FADAC', '#5386A6', '#2F5373']
+    colorList = ['#4FADAC', '#2F5373', '#5386A6']
 
     maxX = 0 # initialize. This will be set later and will make all x axes the same. 
 
@@ -151,9 +132,9 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
         aliveOverTime, eatenOverTime, starvedOverTime = helpStackPlot(perceptionDf, numTimeStep)
         graphInfo.append([aliveOverTime, starvedOverTime, eatenOverTime])
     
-    print("graphInfo is", graphInfo)
+    #print("graphInfo is", graphInfo)
     maxX = calcMaxX(graphInfo)
-    print("maxX is ", maxX)
+    #print("maxX is ", maxX)
        
     for perceptionNum in range(len(dfs)):
         # x-list is timestep
@@ -169,13 +150,13 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
 
         plt.sca(axs[perceptionNum]) # set the axis
         #print(len(graphInfo[perceptionNum]))
-        print("perceptionNum is", perceptionNum)#, "y length is", len(graphInfo[perceptionNum][0][:maxX])
+        #print("perceptionNum is", perceptionNum)#, "y length is", len(graphInfo[perceptionNum][0][:maxX])
         yList1 = extendList(graphInfo[perceptionNum][0][:maxX], maxX)
         yList2 = extendList(graphInfo[perceptionNum][1][:maxX], maxX)
         yList3 = extendList(graphInfo[perceptionNum][2][:maxX], maxX)
-        print("yList1 length is ", len(yList1))
-        print("yList2 length is ", len(yList2))
-        print("yList3 length is ", len(yList3))
+        #print("yList1 length is ", len(yList1))
+        #print("yList2 length is ", len(yList2))
+        #print("yList3 length is ", len(yList3))
         
         plt.stackplot(x_list, yList1, yList2, yList3, colors=colorList)    
     fig.legend(labels=["Alive", "Starved", "Eaten"])
@@ -187,7 +168,7 @@ def calcMaxX(graphInfo):
     a bit greater than the x value that makes all but one of the graphs show 0 prey alive.
     """
     xRanges = [len(graphInfo[i][0]) for i in range(len(graphInfo))] # xRange is the length of the first list in graphInfo for a given intention mode.
-    print("xRanges is", xRanges)
+    #print("xRanges is", xRanges)
     xRanges.remove(max(xRanges)) # remove greatest value; this is the value we want to cut.
     return max(xRanges) + 500
 

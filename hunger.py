@@ -115,7 +115,7 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
     #fig.set_size_inches(18, 9)
     axs = axes.flat
     plt.style.use('ggplot')
-    colorList = ['#4FADAC', '#2F5373', '#5386A6']
+    colorList = ['#4FADAC', '#5386A6', '#2F5373']
 
     maxX = 0 # initialize. This will be set later and will make all x axes the same. 
 
@@ -143,7 +143,7 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
         # make graph.
         axs[perceptionNum].set_title("" + modes[perceptionNum] + " Awareness", fontsize=12)        
         axs[perceptionNum].set_ylabel("" + "Average Number of Prey", fontsize=10) # the "r" is for latex
-        axs[perceptionNum].set_xlabel("" + "Time (Frame of Simulation)", fontsize=10)
+        axs[perceptionNum].set_xlabel("" + "Timestep of Simulation", fontsize=10)
         axs[perceptionNum].tick_params(axis='both', which='major', labelsize=9, direction='in')
         axs[perceptionNum].set(ylim=(0, 20), xlim=(0, maxX))
 

@@ -7,7 +7,7 @@ def drawLine(lineID, line):
     lineID = "line" + str(lineID)
     length = alg.calcDistance(line.startPos, line.endPos)
     yaw = m.radians(alg.calcAngleTo(line.startPos, line.endPos))
-    hsc.write(lineID + " = Instantiate(line," + hsc.posf(line.startPos) + "," + hsc.qf(yaw) + ");")
+    hsc.write(lineID + " = Instantiate(line," + hsc.vf(line.startPos) + "," + hsc.qf(yaw) + ");")
     hsc.write(lineID + ".transform.localScale = " + hsc.vf([0,length,0]) + ";")
 
 def destroyLine(lineID):
@@ -29,7 +29,7 @@ def unitySpawn(objID, prefab, pos, yaw, scale=1):
         scaling = [mv.WALL_WIDTH, scale, mv.WALL_HEIGHT]
     else:
         scaling = [scale, scale, scale]
-    hsc.write(hsc.makeID(objID) + " = Instantiate(" + prefab + "," + hsc.posf(pos) + "," + hsc.qf(yaw) + ");")
+    hsc.write(hsc.makeID(objID) + " = Instantiate(" + prefab + "," + hsc.vf(pos) + "," + hsc.qf(yaw) + ");")
     hsc.write(hsc.makeID(objID) + ".transform.localScale = " + hsc.vf(scaling) + ";")
     if objID > hsc.maxID[0]:
         hsc.maxID[0] = objID
@@ -49,5 +49,5 @@ def unityUpdateObj(objID, objPos, objYaw):
         objRot: quaternion (tuple)
     """
     
-    hsc.write(hsc.makeID(objID) + ".transform.position = " + hsc.posf(objPos) + ";")
+    hsc.write(hsc.makeID(objID) + ".transform.position = " + hsc.vf(objPos) + ";")
     hsc.write(hsc.makeID(objID) + ".transform.rotation = " + hsc.qf(objYaw) + ";")

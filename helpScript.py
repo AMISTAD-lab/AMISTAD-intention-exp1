@@ -26,10 +26,6 @@ def vf(vector):
     vStr = vStr[:-1] + ")"
     return vStr
 
-def posf(vector):
-    """USELESS BUT ALREADY IMPLEMENTED, SAME AS VF"""
-    return vf(vector)
-
 def qf(yaw):
     """formats a yaw into quaternion for unity c# code
     input:

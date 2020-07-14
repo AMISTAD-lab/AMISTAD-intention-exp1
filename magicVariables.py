@@ -63,7 +63,7 @@ PREY_DECISION_CURRENT_SPEED_FACTOR = 0.5 # this one must be in range [0, 1]. Use
 
 PREY_DECISION_BIN_NUM = 12# math.ceil(FULL_CIRCLE * 0.5/PREY_DECISION_CURRENT_YAW_STD) # number of bins to use in estimation. larger means more accurate, but longer run time
 
-PREDATOR_DECISION_BIN_NUM = 12 #<--- COME BACK TO THIS NUMBER! DEFINITELY NEEDS TWEAKING math.ceil(FULL_CIRCLE * 0.5/PREDATOR_DECISION_CURRENT_YAW_STD)
+PREDATOR_DECISION_BIN_NUM = 12 #math.ceil(FULL_CIRCLE * 0.5/PREDATOR_DECISION_CURRENT_YAW_STD)
 
 TERRAIN_CENTER = [0, 0, 0] # center point of terrain. Used to attract pred/prey to center
 

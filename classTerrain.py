@@ -18,7 +18,6 @@ class Terrain:
         hsm.objIDToObject[self.floor] = self
         p.setCollisionFilterGroupMask(self.floor, -1, mv.TERRAIN_GROUP, mv.TERRAIN_MASK)
 
- 
         #make walls
         self.walls = []
         self.walls.append(p.loadURDF(mv.prefabToURDF["wall"], [-0.59*size, 0, size/10.0], ver, useFixedBase=1, globalScaling = size*10)) # 0

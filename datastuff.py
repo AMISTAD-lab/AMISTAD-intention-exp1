@@ -54,12 +54,12 @@ def linearRunGraph(filename, param):
     ax = plt.gca()
     ax.set(ylim=(0, 10000))
     ax.set_ylabel(r"prey lifespan (time steps)")
-    ax.set_xlabel(r"prey-predator ratio")
+    ax.set_xlabel(r"predator sight angle (degrees)")
     ax.tick_params(axis='both', which='major', labelsize=9, direction='in')
     plt.legend()
-    plt.title(r"Prey Lifespan vs Prey-Predator Ratio")
+    plt.title(r"Prey Lifespan vs Predator Sight Angle")
     plt.rc('text', usetex=True)
     plt.show()
 
 
-#linearRunGraph("ppratio.csv", "preyPredRatio")
+linearRunGraph("predsightangle60to120.csv", "predSightAngle")

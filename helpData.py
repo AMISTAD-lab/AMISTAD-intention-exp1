@@ -5,7 +5,14 @@ import pandas as pd
 import numpy as np
 import statistics as stats
 import math as m
+import copy
 
+def filterDataFrame(data, filterlist):
+    data = copy.deepcopy(data)
+    for param, value in filterlist:
+        booleans = data[param] == value
+        data = data[booleans]
+    return data
 
 def combineCSVs(fileNameToCreate, csvFileNameList):
     """Combines the specified csv files into one big csv file.

@@ -7,7 +7,7 @@ NOTE: will need to add latex back in!
 import csv
 import pandas as pd
 import ast
-import datastuff as ds # imports filterList method
+import helpData as ds # imports filterList method
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import rc
@@ -406,4 +406,4 @@ def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
 #testGetNewPreyCountOverTimeList("spdfrac.csv", 0, 2000)
 #avgFoodPerPrey("spdfrac.csv", paramVary = "speedFrac")
 #genEatenStarvedRatioGraph("predsd.csv", 1000, paramIn="predSightDistance
-genStackPlotvsTimeGraph("predSightAngle60to120.csv", 2500, filterList=[["predSightAngle", 90]])
+#genStackPlotvsTimeGraph("predSightAngle60to120.csv", 2000)

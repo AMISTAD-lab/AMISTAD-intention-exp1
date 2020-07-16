@@ -66,7 +66,7 @@ class Predator(Character):
             dist = alg.calcDistance(self.pos, mv.TERRAIN_CENTER)
             
             #adding prob of turning back as we approach chase radius
-            probTurnBack = (dist/mv.CHASE_RADIUS) ** 15
+            probTurnBack = min((dist/mv.CHASE_RADIUS) ** 15, 1)
             turnBack = npr.choice([True, False], size=1, p=[probTurnBack, 1 - probTurnBack])[0]
 
             if preyList and not turnBack:

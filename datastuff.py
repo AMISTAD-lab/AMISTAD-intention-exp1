@@ -1,10 +1,12 @@
 import helpData as hd
 import pandas as pd
+import ast
+import csv
 import matplotlib.pyplot as plt
 import copy
 import hunger as h
 
-def linearRunGraph(filename, param, n_steps):
+def linearRunGraph(filename, param, n_steps, cautiousFile=None):
     data = pd.read_csv(filename)
     plt.style.use('ggplot')
     plt.rc('font', family='serif')
@@ -14,11 +16,17 @@ def linearRunGraph(filename, param, n_steps):
     df2 = hd.filterDataFrame(data, [["targetedAware", False], ["proximityAware", False]])
 
     dfs = [df0, df1, df2]
+
     modes = [r"Proximity + Attention", r"Proximity Only", r"Unaware"]
 
-    colorIter = iter(['#4FADAC', '#5386A6', '#2F5373'])
+    if cautiousFile:
+        df3 = pd.read_csv(cautiousFile)
+        dfs.append(df3)
+        modes.append(r"Cautious")
+
+    colorIter = iter(['#4FADAC', '#5386A6', '#2F5373', '#C59CE6'])
     
-    for i in range(3):
+    for i in range(3 + (cautiousFile != None)):
         df = dfs[i]
         paramValues = []
         survival = []
@@ -119,3 +127,23 @@ def hungerGraph(filename):
     plt.title(r"Prey Lifespan vs Maximum Fasting Interval")
     plt.rc('text', usetex=True)
     plt.show()
+
+def getCautiousSeedData(filename, newfilename, param):
+    data = pd.read_csv(filename)
+    df = hd.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True]])
+    paramDict = {}
+    for val, group in df.groupby(param):
+        groupProbs = []
+        groupLengths = []
+        for i, run in group.iterrows():
+            probs, lengths = ast.literal_eval(run["targetInfo"])
+            groupProbs += probs
+            groupLengths += lengths
+        avg, std, ci = hd.listStats(groupProbs)
+        paramDict[str(val)] = [avg, groupLengths]
+    with open(newfilename, 'w', newline='') as csvfile:
+        fieldnames = ["val", "hist"]
+        writer = csv.writer(csvfile)
+        writer.writerow(["keys", "values"])
+        for key, value in paramDict.items():
+            writer.writerow([key, value])

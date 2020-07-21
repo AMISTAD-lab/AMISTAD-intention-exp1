@@ -2,6 +2,7 @@ import pybullet as p
 import math as m
 import helpSimulate as hsm
 import magicVariables as mv
+import numpy.random as npr
 from classCharacter import *
 import algorithms as alg
 
@@ -14,13 +15,29 @@ class Prey(Character):
         self.isEaten = False    # True if predator has eaten this prey, False otherwise
         self.foodTimeStamps = []
         self.isTargeted = False
-        self.targetList = [[],[],[],[],[]] #new
+        self.targetList = [[],[],[],[],[]]
         p.setCollisionFilterGroupMask(self.objID, -1, mv.PREY_GROUP, mv.PREY_MASK)
+        self.hallucinatedPred = None
+        self.hallucinationTimer = 0
 
 
     def updateCharacter(self):
         """Overrides Character's updateCharacter method, called each step of simulation."""
+        
+        if mv.IS_CAUTIOUS:
+            if self.hallucinationTimer > 0:
+                self.hallucinationTimer -= 1
+            else:
+                self.hallucinatedPred = None
+                self.hallucinate(mv.HALLUCINATE_PROB, mv.BANDWIDTH, mv.TIMER_DISTRIBUTION)
+
         super().updateCharacter(mv.PREY_TIRED_SPEED, mv.PREY_MAX_SPEED, mv.FOOD_MAX_COUNT)
+
+    def hallucinate(self, prob, bw, obs):
+        if np.random.binomial(n=1, p=prob):
+            self.hallucinatedPred = npr.choice(hsm.predatorList)
+            x_i = npr.choice(obs)
+            self.hallucinationTimer = int(abs(npr.normal(x_i, bw) - 1) + 1)
 
     def eatFood(self):
         """Overrides Character's eatFood method."""
@@ -67,7 +84,7 @@ class Prey(Character):
             yawAndAngleArray = alg.genRandFromContinuousDist(alg.probPreyDirection, 0, mv.FULL_CIRCLE, mv.PREY_DECISION_BIN_NUM, self.objID, observationList[1], observationList[2])
             self.yaw = m.radians(yawAndAngleArray[0])
     
-            if self.isTargeted and mv.IS_TARGETED_AWARE:
+            if (self.isTargeted and mv.IS_TARGETED_AWARE and not mv.IS_CAUTIOUS) or (self.hallucinatedPred and mv.IS_CAUTIOUS):
                 if self.isTired:
                     self.speed = mv.PREY_TIRED_SPEED                
                 else:

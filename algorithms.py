@@ -1,6 +1,7 @@
 import pybullet as p
 import helpSimulate as hsm
 import magicVariables as mv
+from scipy.stats import norm
 import random as rng
 import math as m
 import numpy as np
@@ -95,6 +96,8 @@ def probPreyDirection(direction, charID, predatorList, foodList):
     probability += addPredProb(direction, charID, prey.pos, predatorList)
     probability += addFoodProb(direction, prey.pos, hunger, foodList)
     probability += addCurrentProb(direction, currentAngle, mv.PREY_DECISION_CURRENT_YAW_FACTOR)
+    if mv.IS_CAUTIOUS:
+        probability += addHallucinatedPredProb(direction, charID)
     # check if prob is less than or equal to 0
     if probability < 0:
         probability = 0.0
@@ -136,13 +139,26 @@ def addPredProb(direction, charID, pos, predList):
         angleToPred = calcAngleTo(pos, predPos) 
         distToPred = calcDistance(pos, predPos)   
         distanceFactor = mv.PREY_SIGHT_DISTANCE/distToPred
-        if predObj.lastTargetedPrey == charID and mv.IS_TARGETED_AWARE: # account for knowledge if being targeted or not
+        if predObj.lastTargetedPrey == charID and mv.IS_TARGETED_AWARE and not mv.IS_CAUTIOUS: # account for knowledge if being targeted or not
             targetFactor = mv.PREY_DECISION_TARGETED_BY_PRED_FACTOR
         else:
             targetFactor = mv.PREY_DECISION_PREDATOR_FACTOR
         # change prob accordingly
         probChange += distanceFactor * targetFactor * angleWeight(angleToPred + 180.0, direction)
     return probChange
+
+def addHallucinatedPredProb(direction, charID):
+    probChange = 0
+    prey = hsm.objIDToObject[charID]
+    pred = prey.hallucinatedPred
+    if pred:
+        angleToPred = calcAngleTo(prey.pos, pred.pos)
+        distToPred = calcDistance(prey.pos, pred.pos)   
+        distanceFactor = mv.PREY_SIGHT_DISTANCE/distToPred
+        targetFactor = mv.PREY_DECISION_TARGETED_BY_PRED_FACTOR
+        probChange += distanceFactor * targetFactor * angleWeight(angleToPred + 180.0, direction)
+    return probChange
+
 
 
 def addFoodProb(direction, pos, hunger, foodList):

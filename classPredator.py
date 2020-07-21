@@ -18,7 +18,6 @@ class Predator(Character):
         self.preyTimeStamps = []
         p.setCollisionFilterGroupMask(self.objID, -1, mv.PREDATOR_GROUP, mv.PREDATOR_MASK)
 
-
     def updateCharacter(self):
         """Overrides Character's updateCharacter method, called each step of simulation."""
         super().updateCharacter(mv.PREDATOR_TIRED_SPEED, mv.PREDATOR_MAX_SPEED, mv.FOOD_MAX_COUNT)

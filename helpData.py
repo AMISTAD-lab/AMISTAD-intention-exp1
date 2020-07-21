@@ -3,7 +3,9 @@ import seaborn as sb
 import csv
 import pandas as pd
 import numpy as np
+import ast
 import statistics as stats
+from KDEpy import FFTKDE
 import math as m
 import copy
 
@@ -173,3 +175,16 @@ def avgTargetInfo(targetInfo, graph=False):
         plt.ylabel("Count")
         plt.show()
     return s_avg, s_ci, d_avg, d_ci
+
+def loadCautiousDict(filename):
+    data = pd.read_csv(filename)
+    paramDict = data.set_index('keys').T.to_dict('list')
+    
+    for key, value in paramDict.items():
+        prob, length = ast.literal_eval(value[0])
+        if len(length) > 200:
+            kde = FFTKDE(kernel='gaussian', bw='ISJ').fit(length)
+            kde.evaluate()
+            paramDict[key] = prob, kde.bw, length
+
+    return paramDict

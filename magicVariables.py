@@ -1,4 +1,5 @@
 from algorithms import randSpawnPos
+from helpData import loadCautiousDict
 
 #change prefabs in script (if wanted), no longer drag&link
 prefabToURDF = {
@@ -100,6 +101,12 @@ IS_PROXIMITY_AWARE = True
     
 IS_TARGETED_AWARE = True
 
+IS_CAUTIOUS = False
+HALLUCINATE_PROB = 0
+BANDWIDTH = 0
+TIMER_DISTRIBUTION = []
+
+
 TERRAIN_SIZE = 250 #side length of square
 # ---note: See reassignments!!!! these values are NOT the ending values for these vars! 
 TERRAIN_DIAMETER = TERRAIN_SIZE * 0.6 #percentage of terrainSize subject to change
@@ -146,10 +153,20 @@ PREDATOR_TARGET_SPEED = PREDATOR_MAX_SPEED * (2/3.0)
 ## REASSIGNMENTS ##
 ###################
 
+#THIS MUST BE KEPT UP TO DATE
+standardParams = {
+        "preyPredRatio" : 4,
+        "preySightDistance" : 10,
+        "predSightDistance" : 20,
+        "predSightAngle" : 90,
+        "speedFrac": 0.8
+    }
+
 def redefineMagicVariables(preferences):
     """preferences is a dictionary with values for the following keys:
     "targetedAware"
     "proximityAware"
+    "cautious"
     "preyPredRatio"
     "preySightDistance"
     "predSightDistance"
@@ -157,11 +174,29 @@ def redefineMagicVariables(preferences):
     "speedFrac" #pred speed is fraction of prey speed
     """
 
+    if preferences["cautious"]:
+        global HALLUCINATE_PROB, BANDWIDTH, TIMER_DISTRIBUTION
+        if int(preferences["preyPredRatio"]) != int(standardParams["preyPredRatio"]):
+            HALLUCINATE_PROB, BANDWIDTH, TIMER_DISTRIBUTION = loadCautiousDict("preyPredRatioCautious.csv")[preferences["preyPredRatio"]]
+        elif int(preferences["preySightDistance"]) != int(standardParams["preySightDistance"]):
+            HALLUCINATE_PROB, BANDWIDTH, TIMER_DISTRIBUTION = loadCautiousDict("preySightDistanceCautious.csv")[preferences["preySightDistance"]]
+        elif int(preferences["predSightDistance"]) != int(standardParams["predSightDistance"]):
+            HALLUCINATE_PROB, BANDWIDTH, TIMER_DISTRIBUTION = loadCautiousDict("predSightDistanceCautious.csv")[preferences["predSightDistance"]]
+        elif int(preferences["predSightAngle"]) != int(standardParams["predSightAngle"]):
+            HALLUCINATE_PROB, BANDWIDTH, TIMER_DISTRIBUTION = loadCautiousDict("predSightAngleCautious.csv")[preferences["predSightAngle"]]
+        elif preferences["speedFrac"] != standardParams["speedFrac"]:
+            HALLUCINATE_PROB, BANDWIDTH, TIMER_DISTRIBUTION = loadCautiousDict("speedFracCautious.csv")[preferences["speedFrac"]]
+        else:
+            HALLUCINATE_PROB, BANDWIDTH, TIMER_DISTRIBUTION = loadCautiousDict("predSightAngleCautious.csv")[standardParams["predSightAngle"]]
+
     global IS_TARGETED_AWARE
     IS_TARGETED_AWARE = preferences["targetedAware"]
 
     global IS_PROXIMITY_AWARE
     IS_PROXIMITY_AWARE = preferences["proximityAware"]
+
+    global IS_CAUTIOUS
+    IS_CAUTIOUS = preferences["cautious"]
 
     global PREY_START_COUNT
     PREY_START_COUNT = PREDATOR_START_COUNT * int(preferences["preyPredRatio"])

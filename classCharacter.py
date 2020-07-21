@@ -27,6 +27,9 @@ class Character(metaclass = ABCMeta):
         self.objID = hsm.create(prefab, filename, objPos, self.yaw, scale=size)
         hsm.objIDToObject[self.objID] = self # populate dictionary with this character
 
+    def __repr__(self):
+        return str(self.objID)
+
     @abstractmethod
     def updateCharacter(self, tiredSpeed, maxSpeed, tiredStamina):
         """Called each step of the simulation. Determines action of the character. 

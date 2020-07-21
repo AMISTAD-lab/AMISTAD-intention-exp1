@@ -67,7 +67,6 @@ def createExpInputFile(inputToVary, startValue, endValue, stepValue):
             saveToWrite = toWrite
             toWrite += "proximityAware " + str(proximityAware) + "\n"
             if not (targetedAware and not proximityAware):
-                #print("preySightDistance" in inputsToVary)
                 if (inputToVary == "preySightDistance"):
                     for preySightDistance in range(startValue, endValue+1, stepValue):
                         file.write(toWrite)
@@ -93,6 +92,46 @@ def createExpInputFile(inputToVary, startValue, endValue, stepValue):
                     print("ERROR: Invalid inputToVary.")
 
             toWrite = saveToWrite
+    file.close() 
+    return filename   
+
+def createCautiousFile(inputToVary, startValue, endValue, stepValue):
+    """Inputs:
+        inputToVary: String, the input to vary. 
+            eg. "predSightDistance"
+        startValue: the starting value of input, inclusive
+        endingValue: the ending value of input, inclusive
+        stepValue: the stepValue for input
+    """
+    filename = "cautiousInput.txt"
+    file = open(filename, "w")
+    for targetedAware in [True]:
+        toWrite = "targetedAware " + str(True) + "\n"
+        toWrite += "proximityAware " + str(True) + "\n"
+        toWrite += "cautious " + str(True) + "\n"
+        if (inputToVary == "preySightDistance"):
+            for preySightDistance in range(startValue, endValue+1, stepValue):
+                file.write(toWrite)
+                file.write("preySightDistance " + str(preySightDistance) + "\n\n")
+        elif (inputToVary == "predSightDistance"):
+            for predSightDistance in range(startValue, endValue+1, stepValue):
+                file.write(toWrite)
+                file.write("predSightDistance " + str(predSightDistance) + "\n\n")
+        elif (inputToVary == "predSightAngle"):
+            for predSightAngle in range(startValue, endValue+1, stepValue):
+                file.write(toWrite)
+                file.write("predSightAngle " + str(predSightAngle) + "\n\n")
+        elif (inputToVary == "preyPredRatio"):
+            for preyPredRatio in range(startValue, endValue+1, stepValue):
+                file.write(toWrite)
+                file.write("preyPredRatio " + str(preyPredRatio) + "\n\n")
+        elif (inputToVary == "speedFrac"):
+            for speedFrac in range(startValue, endValue+1, stepValue):
+                speedFrac /= 10 #hacky ik
+                file.write(toWrite)
+                file.write("speedFrac " + str(speedFrac) + "\n\n")
+        else:
+            print("ERROR: Invalid inputToVary.")
     file.close() 
     return filename                     
 
@@ -152,6 +191,7 @@ def createSeedListFromFile(filename):
     standardSeed = {
         "targetedAware" : True,
         "proximityAware" : True,
+        "cautious" : False,
         "preyPredRatio" : 4,
         "preySightDistance" : 10,
         "predSightDistance" : 20,

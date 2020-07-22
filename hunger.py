@@ -86,13 +86,11 @@ def plotPerceptionLineGraph(xValList, yValList, modes, xlabel, ylabel, title):
     ax.set_ylabel("" + ylabel) # the "r" is for latex
     ax.set_xlabel("" + xlabel)
     ax.tick_params(axis='both', which='major', labelsize=9, direction='in')
-    plt.legend()
+    plt.legend(fontsize=11)
     plt.title("" + title)
     #plt.rc('text', usetex=True)
     plt.show()
 
-
-    
 
 def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
     """Generates a stack plot of prey states over time step for Intention and 
@@ -162,6 +160,90 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
     fig.legend(labels=["Alive", "Starved", "Eaten"])
     #plt.rc('text', usetex=True)
     plt.show()
+    
+
+def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
+    """Generates a stack plot of prey states over time step for intention and 
+    non intention modes. NOTE: Will probably need to include cautiousness
+    as another graph later.
+
+    This one is the "New" version because it creates separate graphs!
+
+    Inputs:
+        filename: the name of the csv file to read from
+        numTimeStep: the time for which the prey can go without eating before
+        dying of hunger.
+        filterList: a filter list to filter the runs by. Most likely use if 
+            we need to filter to only get the standard seed from a csv with 
+            varied parameters. eg. [["predSightDistance", 10]]"""
+    modes, dfs = getPerceptionTierDataframes(filename)
+
+    plt.rc('font', family='serif') 
+    # set up subplot thing
+    #fig, axes = plt.subplots(1,3 )
+    #fig.tight_layout(w_pad=1, h_pad=1, rect=[0,0,.9, .9])
+    #fig.suptitle("Prey Status over Time", fontsize=16)
+    #fig.set_size_inches(18, 9)
+    #axs = axes.flat
+    plt.style.use('ggplot')
+    colorList = ['#4FADAC', '#5386A6', '#2F5373']
+
+    maxX = 0 # initialize. This will be set later and will make all x axes the same. 
+
+    graphInfo = []
+
+    # loop through dataframes. We will want one stackplot per mode.
+    for perceptionNum in range(len(dfs)):
+        perceptionDf = dfs[perceptionNum]
+        # filter
+        if filterList != None:
+            perceptionDf = ds.filterDataFrame(perceptionDf, filterList)
+        #if perceptionNum == 1:
+            #print("calculating preyStarved for only proximity aware.")
+        aliveOverTime, eatenOverTime, starvedOverTime = helpStackPlot(perceptionDf, numTimeStep)
+        graphInfo.append([aliveOverTime, starvedOverTime, eatenOverTime])
+    
+    print("graphInfo is", graphInfo)
+    maxX = calcMaxX(graphInfo)
+    #print("maxX is ", maxX)
+    #axs = plt.gca()
+       
+    for perceptionNum in range(len(dfs)):
+        plt.figure(figsize=[5, 5])
+
+        axs = plt.gca()
+        plt.rc('font', family='serif') 
+    
+        plt.style.use('ggplot')
+
+        # x-list is timestep
+        x_list = range(maxX)
+
+        # make graph.
+        axs.set_title("" + modes[perceptionNum] + " Awareness", fontsize=12)        
+        axs.set_ylabel("" + "Average Number of Prey", fontsize=9) # the "r" is for latex
+        axs.set_xlabel("" + "Timestep of Simulation", fontsize=9)
+        axs.tick_params(axis='both', which='major', labelsize=9, direction='in')
+        axs.set(ylim=(0, 20), xlim=(0, maxX))
+
+
+        #plt.sca(axs[perceptionNum]) # set the axis
+        #print(len(graphInfo[perceptionNum]))
+        #print("perceptionNum is", perceptionNum)#, "y length is", len(graphInfo[perceptionNum][0][:maxX])
+        yList1 = extendList(graphInfo[perceptionNum][0][:maxX], maxX)
+        yList2 = extendList(graphInfo[perceptionNum][1][:maxX], maxX)
+        yList3 = extendList(graphInfo[perceptionNum][2][:maxX], maxX)
+        #print("yList1 length is ", len(yList1))
+        #print("yList2 length is ", len(yList2))
+        #print("yList3 length is ", len(yList3))
+        #plt.legend(labels=["Alive", "Starved", "Eaten"])
+        plt.stackplot(x_list, yList1, yList2, yList3, colors=colorList) 
+        plt.legend(labels=["Alive", "Starved", "Eaten"])
+        #plt.figure(figsize=[5, 5])
+        plt.show()   
+    #fig.legend(labels=["Alive", "Starved", "Eaten"])
+    #plt.rc('text', usetex=True)
+    #plt.show()
 
 def calcMaxX(graphInfo):
     """Calculates the maximum x value given all the graph info. Maximum x value should be
@@ -406,4 +488,4 @@ def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
 #testGetNewPreyCountOverTimeList("spdfrac.csv", 0, 2000)
 #avgFoodPerPrey("spdfrac.csv", paramVary = "speedFrac")
 #genEatenStarvedRatioGraph("predsd.csv", 1000, paramIn="predSightDistance
-#genStackPlotvsTimeGraph("predSightAngle60to120.csv", 2000)
+#genNewStackPlotvsTimeGraph("results/preyPredRatio3.csv", 2000, [["preyPredRatio", 4]])

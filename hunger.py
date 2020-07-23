@@ -8,6 +8,9 @@ genNewStackPlotvsTimeGraph(): generates separate survival stack plots for each m
 
 genStackPlotvsTimeGraph(): generates survival stack plots for each mode that are all combined in one figure. Does not graph caution.
 
+plotPerceptionLineGraph(xValList, yValList, modes, xlabel, ylabel, title): Plots 3 line graphs (one for each intention mode).
+
+avgFoodPerPrey(filename, paramVary): A graph varying the food per prey with another parameter.
 
 """
 
@@ -20,7 +23,9 @@ import numpy as np
 from matplotlib import rc
 
 def getPerceptionTierDataframes(filename):
-    """Takes in a csv file and returns data frames according to perception tiers """
+    """Takes in a csv file and returns data frames according to perception tiers 
+    Inputs:
+        filename: String, the name of the csv file to read from"""
     data = pd.read_csv(filename)
     df0 = ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True]])
     df1 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", True]])
@@ -30,9 +35,10 @@ def getPerceptionTierDataframes(filename):
     return modes, dfs
 
 def avgFoodPerPrey(filename, paramVary):
-    """prints a graph varying foodperprey with another parameter
-    filename = csv file
-    param = param to vary
+    """Displays a graph varying food per prey with another parameter
+    Inputs: 
+        filename: String, the csv file to read from
+        paramVary: String, the parameter to vary
     """
     modes, dfs = getPerceptionTierDataframes(filename)
     xValList = []
@@ -61,7 +67,10 @@ def avgFoodPerPrey(filename, paramVary):
     plotPerceptionLineGraph(xValList, yValList, modes, paramVary, r"average # of food eaten per prey", " " )    
 
 def countEmptyList(inputList, isOuterList = True):
-    """helper method for avgFoodPerPrey, takes in a list and count all the empty lists inside it"""
+    """Helper method for avgFoodPerPrey, takes in a list and counts all the empty lists inside it
+    Inputs:
+        inputList: list, the list to analyze
+        isOuterList: boolean"""
     if inputList == []:
         if isOuterList:
             return 0
@@ -76,26 +85,23 @@ def plotPerceptionLineGraph(xValList, yValList, modes, xlabel, ylabel, title):
     """ Plots a line graph with 3 lines, one for each intention mode. The lines themselves vary
     upon a particular parameter (see xValList)
     Inputs:
-        xValList: list, List of 3 lists, each of which is the x-values for the parameter varied for a given intention mode. Should all be the same.
-        yValList: list, List of 3 lists, each of which is the y-values for a given intention mode.
+        xValList: list, a list of 3 lists, each of which is the x-values for the parameter varied for a given intention mode. Should all be the same.
+        yValList: list, a list of 3 lists, each of which is the y-values for a given intention mode.
         modes: list, List of intention modes
-        xlabel: String, The parameter we are varying
+        xlabel: String, the parameter we are varying
         ylabel: String, the value
-        title: String, The title of the graph"""
+        title: String, the title of the graph"""
     plt.style.use('ggplot')
     colorIter = iter(['#4FADAC', '#5386A6', '#2F5373'])
     for lineNum in range(len(xValList)):
         color = next(colorIter)
         plt.plot(xValList[lineNum], yValList[lineNum], label=modes[lineNum], color=color, linewidth=2)
-        #plt.fill_between(xValList[lineNum], low_ci, up_ci, color=color, alpha=.15)   
     ax = plt.gca()
-    #ax.set(ylim=(0, 10000))
-    ax.set_ylabel("" + ylabel) # the "r" is for latex
+    ax.set_ylabel("" + ylabel)
     ax.set_xlabel("" + xlabel)
     ax.tick_params(axis='both', which='major', labelsize=9, direction='in')
     plt.legend(fontsize=11)
     plt.title("" + title)
-    #plt.rc('text', usetex=True)
     plt.show()
 
 
@@ -147,7 +153,6 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
         axs[perceptionNum].tick_params(axis='both', which='major', labelsize=9, direction='in')
         axs[perceptionNum].set(ylim=(0, 20), xlim=(0, maxX))
 
-
         plt.sca(axs[perceptionNum]) # set the axis
         yList1 = extendList(graphInfo[perceptionNum][0][:maxX], maxX)
         yList2 = extendList(graphInfo[perceptionNum][1][:maxX], maxX)
@@ -155,14 +160,13 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
         
         plt.stackplot(x_list, yList1, yList2, yList3, colors=colorList)    
     fig.legend(labels=["Alive", "Starved", "Eaten"])
-    #plt.rc('text', usetex=True)
+    #plt.rc('text', usetex=True) # uncomment to use latex
     plt.show()
 
 def getPerceptionDataframesCaution(filename):
     """New version of getPerceptionTierDataframes() that includes the caution mode.
     Inputs:
         filename: the filename to read from"""
-    """Takes in a csv file and returns data frames according to perception tiers """
     data = pd.read_csv(filename)
     df0 = ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True], ["cautious", False]])
     df1 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", True], ["cautious", False]])
@@ -176,19 +180,17 @@ def getPerceptionDataframesCaution(filename):
     
 
 def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None, includeCaution=False):
-    """Generates a stack plot of prey states over time step for intention and 
-    non intention modes. NOTE: Will probably need to include cautiousness
-    as another graph later.
-
-    This one is the "New" version because it creates separate graphs!
+    """Generates separate stack plots of prey states over time step for intention and 
+    non intention modes. Includes an option to make a stackplot for the caution mode.
 
     Inputs:
-        filename: the name of the csv file to read from
-        numTimeStep: the time for which the prey can go without eating before
+        filename: String, the name of the csv file to read from
+        numTimeStep: Int, the time for which the prey can go without eating before
         dying of hunger.
-        filterList: a filter list to filter the runs by. Most likely use if 
+        filterList: List, a filter list to filter the runs by. Most likely use if 
             we need to filter to only get the standard seed from a csv with 
             varied parameters. eg. [["predSightDistance", 10]]"""
+    
     # Determine whether the "Cautious" stackplot should be made.
     if includeCaution:
         modes, dfs = getPerceptionDataframesCaution(filename)
@@ -199,7 +201,7 @@ def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None, includeCa
     plt.style.use('ggplot')
     colorList = ['#4FADAC', '#5386A6', '#2F5373']
 
-    maxX = 0 # initialize. This will be set later and will make all x axes the same. 
+    maxX = 0 # Initialize. This will be set later and will make all x axes the same. 
 
     graphInfo = []
 
@@ -212,7 +214,6 @@ def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None, includeCa
         aliveOverTime, eatenOverTime, starvedOverTime = helpStackPlot(perceptionDf, numTimeStep)
         graphInfo.append([aliveOverTime, starvedOverTime, eatenOverTime])
     
-    print("graphInfo is", graphInfo)
     maxX = calcMaxX(graphInfo)
        
     for perceptionNum in range(len(dfs)):
@@ -243,14 +244,19 @@ def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None, includeCa
 def calcMaxX(graphInfo):
     """Calculates the maximum x value given all the graph info. Maximum x value should be
     a bit greater than the x value that makes all but one of the graphs show 0 prey alive.
+    Inputs:
+        graphInfo: List of lists. Each inner list is of the form [aliveOverTime, eatenOverTime, starvedOverTime].
+        Each inner list corresponds to one perception mode.
     """
     xRanges = [len(graphInfo[i][0]) for i in range(len(graphInfo))] # xRange is the length of the first list in graphInfo for a given intention mode.
-    #print("xRanges is", xRanges)
     xRanges.remove(max(xRanges)) # remove greatest value; this is the value we want to cut.
     return max(xRanges) + 500
 
 def extendList(listIn, extendNum):
-    """Extends a list till extendNum (but not including extendNum)."""
+    """Extends a list till extendNum (but not including extendNum).
+    Inputs:
+        listIn: List, the list to be extended
+        extendNum: Int, the index at which to stop extending (exclusive)"""
     lengthDiff = extendNum - len(listIn)
     listIn += lengthDiff * [listIn[-1]]
     return listIn
@@ -259,6 +265,9 @@ def extendList(listIn, extendNum):
 def helpStackPlot(dataframe, numTimeStep):
     """ Takes in a dataframe with a single perception mode.
     Returns lists of average preyAlive over time, prey Eaten over time, and prey starved over time.
+    Inputs:
+        dataframe: the pandas dataframe to make the stackplot from
+        numTimeStep: the number of time steps a prey can go without food until it starves.
     """
     # get info
     foodPerPreyList = dataframe["foodPerPrey"]
@@ -293,7 +302,8 @@ def helpStackPlot(dataframe, numTimeStep):
 
 
 def equalizeListLengths(listIn, listType, maxLength=None):
-    """Inputs:
+    """ Makes all lists the same length. Uses the length of the maximum length list.
+    Inputs:
         listIn: list, the list whose sublists we want to equalize lengths.
         listType: String, the type of list we are equalizing"""
     if maxLength == None:
@@ -326,14 +336,8 @@ def getNewPreyCountOverTimeList(foodPerPreyList, preyCountOverTimeList, preyPerP
     preyPerPredList = ast.literal_eval(preyPerPredList)
     preyEatenTimestamps = getPreyEatenTimestamps(preyPerPredList) # get timestamps from overall list
     preyStarvedOverTimeList = [0] * len(preyCountOverTimeList) # create a list of number of prey that have starved.
-    #print("\n\n In getNewPreyCountOverTimeList")
-    #print("preyCountOverTimeList is", preyCountOverTimeList)
-    #if (len(foodPerPreyList) > 20):
-        #print("UH OH, preyFoodList has length", len(preyFoodList))
-    # loop through the list of prey
     testCount = 0
     for preyFoodList in foodPerPreyList:
-        #print("preyFoodList is", preyFoodList, "this is prey", testCount)
         testCount += 1
         # If the prey never ate, immediately check if it starved or died from being eaten, and act accordingly
         if len(preyFoodList) == 0:
@@ -348,8 +352,6 @@ def getNewPreyCountOverTimeList(foodPerPreyList, preyCountOverTimeList, preyPerP
             while (timeStepIndex < len(preyFoodList) and not isPreyStarved):
                 currentTimeStep = preyFoodList[timeStepIndex][0]
                 isPreyStarved = (currentTimeStep - prevEatTimeStep) > numTimeStep
-                #if not isPreyStarved:
-                    #print("isPreyStarved is false, currentTimeStep is ", currentTimeStep, "prevEatTimeStep is", prevEatTimeStep)
                 if isPreyStarved: # revise prey count list 
                     preyEatenTimeStep, preyEatenTimestamps = getPreyEatenTimeStep(preyEatenTimestamps, preyCountOverTimeList)
                     preyCountOverTimeList, preyStarvedOverTimeList = revisePreyCountList(preyCountOverTimeList, preyStarvedOverTimeList, prevEatTimeStep + numTimeStep, preyEatenTimeStep)
@@ -363,12 +365,11 @@ def revisePreyCountList(preyCountList, preyStarvedList, preyStarvedTimeStep, pre
     getNewPreyCountOverTimeList()
     Decreases the prey count for all timeSteps after the given timeStep, including the given timestep.
     Input:
-        preyCountList: list, the current preyCountList.
-        preyDiedTimeStep: int, the timeStep at which a prey died.
+        preyCountList: List, the current preyCountList.
+        preyDiedTimeStep: Int, the timeStep at which a prey died.
     Returns:
-        newPreyCountList: list, the new preyCountList
+        newPreyCountList: List, the new preyCountList
     """
-    #print("preyStarvedTimeStep is", preyStarvedTimeStep, "and preyEatenTimeStep is", preyEatenTimeStep)
     if preyStarvedTimeStep < preyEatenTimeStep:
         # revise preyCountList
         for timeStep in range(preyStarvedTimeStep, preyEatenTimeStep + 1): # the +1 is because the prey count is not decremented on the exact frame that a prey is eaten.
@@ -376,9 +377,6 @@ def revisePreyCountList(preyCountList, preyStarvedList, preyStarvedTimeStep, pre
         # revise preyStarvedList
         for timeStep in range(preyStarvedTimeStep, len(preyCountList)):
             preyStarvedList[timeStep] += 1
-        #print("a prey starved")
-    #else:
-        #print("prey 'starved' at", preyStarvedTimeStep, "but was eaten at", preyEatenTimeStep)
     return preyCountList, preyStarvedList
 
 
@@ -386,7 +384,6 @@ def getPreyEatenTimeStep(preyEatenTimestamps, preyCountOverTimeList):
     """Helper method for getNewPreyCountOverTimeList."""
     if len(preyEatenTimestamps) == 0: # if prey was never eaten, set this time step to the last possible time step.
         preyEatenTimeStep = len(preyCountOverTimeList) - 1
-        #print("prey was never eaten.")
     else: 
         preyEatenTimeStep = min(preyEatenTimestamps) # if prey was eaten, get time step at which it was eaten and remove it from the list.
         preyEatenTimestamps.remove(preyEatenTimeStep)
@@ -398,14 +395,12 @@ def getPreyEatenTimestamps(preyPerPredList):
     Helper method for getNewPreyCountOverTimeList()
     Inputs:
         preyPerPredList: the list of predators, with the time stamps at which they eat prey."""
-    #print("preyPerPredList is", preyPerPredList)
     timeStepList = []
     for predList in preyPerPredList:
         for eatenList in predList:
             numPreyEaten = eatenList[1]
             currentTimeStep = eatenList[0]
             timeStepList += [currentTimeStep] * numPreyEaten # account for predators that eat multiple prey in one timestep
-    #print("returning", timeStepList)
     return timeStepList
     
 
@@ -418,10 +413,6 @@ def getEatenStarvedRatio(dataframe, numTimeStep):
     preyCountOverTimeList = dataframe["preyCountOverTime"]
     preyPerPredList = dataframe["preyPerPred"]
 
-    print("foodPerPreyList is", foodPerPreyList)
-    print("preyCountOverTimeList is", preyCountOverTimeList)
-    print("preyPerPredList is", preyPerPredList)
-
     totalPreyStarved = 0 # totals
     totalPreyDied = 0
 
@@ -431,7 +422,6 @@ def getEatenStarvedRatio(dataframe, numTimeStep):
         newPreyCountOverTimeList, preyStarvedOverTimeList = getNewPreyCountOverTimeList(foodPerPreyList[run], preyCountOverTimeList[run], preyPerPredList[run], numTimeStep) 
         # get total number prey eaten
         numPreyDied = newPreyCountOverTimeList[0] - newPreyCountOverTimeList[-1]
-        #numPreyEaten = numPreyDied - numPreyStarved 
         # increment totals
         totalPreyStarved += preyStarvedOverTimeList[-1] 
         totalPreyDied += numPreyDied
@@ -464,13 +454,11 @@ def genEatenStarvedRatioGraph(filename, numTimeStep, paramIn=None):
             allParamList.append(paramList)
             allRatioList.append(ratioList)
         plotPerceptionLineGraph(allParamList, allRatioList, modes, paramIn, "Proportion of Prey Deaths due to Starvation", paramIn + " vs. Proportion of Prey Deaths due to Starvation")
-    #else:s
-        #...
 
 def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
     """ Testing method
-    filename = file.csv
-    numTimeStep = the number of steps we consider to be starve"""
+    filename: String, the file name of the csv to read from
+    numTimeStep: Int, the number of steps at which we consider prey to be starved"""
     col_list = ["foodPerPrey", "preyCountOverTime", "preyPerPred"] # get info from dataframe
     df = pd.read_csv(filename, usecols=col_list)
     preyList = df["foodPerPrey"][rowNum]
@@ -483,4 +471,4 @@ def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
 #testGetNewPreyCountOverTimeList("spdfrac.csv", 0, 2000)
 #avgFoodPerPrey("spdfrac.csv", paramVary = "speedFrac")
 #genEatenStarvedRatioGraph("predsd.csv", 1000, paramIn="predSightDistance
-genNewStackPlotvsTimeGraph("results/preyPredRatio3.csv", 2000, filterList=[["preyPredRatio", 4]], includeCaution=True)
+#genNewStackPlotvsTimeGraph("results/preyPredRatio3.csv", 2000, filterList=[["preyPredRatio", 4]], includeCaution=True)

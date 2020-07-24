@@ -163,23 +163,23 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
     #plt.rc('text', usetex=True) # uncomment to use latex
     plt.show()
 
-def getPerceptionDataframesCaution(filename):
+def getPerceptionDataframesCaution(filename, cfilename):
     """New version of getPerceptionTierDataframes() that includes the caution mode.
     Inputs:
         filename: the filename to read from"""
     data = pd.read_csv(filename)
-    df0 = ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True], ["cautious", False]])
-    df1 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", True], ["cautious", False]])
-    df2 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", False], ["cautious", False]])
-    df3 = ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True], ["cautious", True]]) # the cautious mode
+    df0 = ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True]])#, ["cautious", False]])
+    df1 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", True]])#, ["cautious", False]])
+    df2 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", False]])#, ["cautious", False]])
+    df3 = pd.read_csv(cfilename)#ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True], ["cautious", True]]) # the cautious mode
 
     dfs = [df0, df1, df2, df3]
-    modes = [r"Proximity and Attention Awareness", r"Proximity Awareness Only", r"No Awareness", r"Cautious"]
+    modes = [r"Proximity + Attention", r"Proximity Only", r"Unaware", r"Cautious"]
     return modes, dfs
 
     
 
-def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None, includeCaution=False):
+def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None, cfilename=None):
     """Generates separate stack plots of prey states over time step for intention and 
     non intention modes. Includes an option to make a stackplot for the caution mode.
 
@@ -191,12 +191,18 @@ def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None, includeCa
             we need to filter to only get the standard seed from a csv with 
             varied parameters. eg. [["predSightDistance", 10]]"""
     
+    labelsize = 18
+    legendsize = 14
+    titlesize = 20
+    ticksize = 16
+
     # Determine whether the "Cautious" stackplot should be made.
-    if includeCaution:
-        modes, dfs = getPerceptionDataframesCaution(filename)
+    if cfilename:
+        modes, dfs = getPerceptionDataframesCaution(filename, cfilename)
     else:
         modes, dfs = getPerceptionTierDataframes(filename)
 
+    plt.rc('text', usetex=True)
     plt.rc('font', family='serif')
     plt.style.use('ggplot')
     colorList = ['#4FADAC', '#5386A6', '#2F5373']
@@ -217,29 +223,29 @@ def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None, includeCa
     maxX = calcMaxX(graphInfo)
        
     for perceptionNum in range(len(dfs)):
-        plt.figure(figsize=[5, 5])
 
-        axs = plt.gca()
-        plt.rc('font', family='serif') 
-    
-        plt.style.use('ggplot')
+        fig = plt.figure(figsize=[5, 5])
+
+        axs = fig.gca()
 
         # x-list is timestep
         x_list = range(maxX)
 
         # make graph.
-        axs.set_title("" + modes[perceptionNum] + " Awareness", fontsize=12)        
-        axs.set_ylabel("" + "Average Number of Prey", fontsize=9) # the "r" is for latex
-        axs.set_xlabel("" + "Timestep of Simulation", fontsize=9)
-        axs.tick_params(axis='both', which='major', labelsize=9, direction='in')
+        axs.set_title("" + modes[perceptionNum], fontsize=titlesize, fontweight='bold')        
+        axs.set_ylabel("" + "Average Number of Prey", fontsize=labelsize, fontweight='bold') # the "r" is for latex
+        axs.set_xlabel("" + "Timestep of Simulation", fontsize=labelsize, fontweight='bold')
+        axs.tick_params(axis='both', which='major', labelsize=ticksize, direction='in')
         axs.set(ylim=(0, 20), xlim=(0, maxX))
 
         yList1 = extendList(graphInfo[perceptionNum][0][:maxX], maxX)
         yList2 = extendList(graphInfo[perceptionNum][1][:maxX], maxX)
         yList3 = extendList(graphInfo[perceptionNum][2][:maxX], maxX)
         plt.stackplot(x_list, yList1, yList2, yList3, colors=colorList) 
-        plt.legend(labels=["Alive", "Starved", "Eaten"])
-        plt.show()   
+        plt.legend(labels=["Alive", "Starved", "Eaten"], prop={"size":legendsize})
+        fig.tight_layout()
+        fig.savefig("hungerstack" + str(perceptionNum), bbox_inches='tight', pad_inches=0)
+    plt.close('all')
 
 def calcMaxX(graphInfo):
     """Calculates the maximum x value given all the graph info. Maximum x value should be
@@ -471,4 +477,7 @@ def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
 #testGetNewPreyCountOverTimeList("spdfrac.csv", 0, 2000)
 #avgFoodPerPrey("spdfrac.csv", paramVary = "speedFrac")
 #genEatenStarvedRatioGraph("predsd.csv", 1000, paramIn="predSightDistance
+
 #genNewStackPlotvsTimeGraph("results/preyPredRatio3.csv", 2000, filterList=[["preyPredRatio", 4]], includeCaution=True)
+
+genNewStackPlotvsTimeGraph("cpredsa.csv", 2000, filterList=[["predSightAngle", 90]], cfilename="cpdsa.csv")

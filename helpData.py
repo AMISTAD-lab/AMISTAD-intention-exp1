@@ -3,9 +3,7 @@ import seaborn as sb
 import csv
 import pandas as pd
 import numpy as np
-import ast
 import statistics as stats
-from KDEpy import FFTKDE
 import math as m
 import copy
 
@@ -18,13 +16,14 @@ def filterDataFrame(data, filterlist):
 
 def combineCSVs(fileNameToCreate, csvFileNameList):
     """Combines the specified csv files into one big csv file.
+    Note: only works for csvs with exactly 15 columns.
     Inputs:
         fileNameToCreate: the file name for the combined csvs
         csvFolderName: the name of the folder that contains all the csvs to be 
         appended."""
     dfList = []
     for fileName in csvFileNameList:
-        df = pd.read_csv(fileName, header=0, index_col=None)
+        df = pd.read_csv(fileName, header=0, index_col=None, usecols=range(0, 15)) # uses columns from 0 to 15 only.
         dfList.append(df)
     resultDf = pd.concat(dfList) # concatenate dataframe versions of csv
     resultDf.to_csv(fileNameToCreate, index=False)
@@ -175,16 +174,3 @@ def avgTargetInfo(targetInfo, graph=False):
         plt.ylabel("Count")
         plt.show()
     return s_avg, s_ci, d_avg, d_ci
-
-def loadCautiousDict(filename):
-    data = pd.read_csv(filename)
-    paramDict = data.set_index('keys').T.to_dict('list')
-    
-    for key, value in paramDict.items():
-        prob, length = ast.literal_eval(value[0])
-        if len(length) > 200:
-            kde = FFTKDE(kernel='gaussian', bw='ISJ').fit(length)
-            kde.evaluate()
-            paramDict[key] = prob, kde.bw, length
-
-    return paramDict

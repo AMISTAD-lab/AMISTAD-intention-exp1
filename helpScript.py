@@ -105,5 +105,6 @@ def makeScript():
         masterScript.write("Destroy(obj" + str(i) +");\n")
     masterScript.write("frameCount = 0;\n")
     masterScript.write("}\n")
+    masterScript.writelines(["if (Input.GetKey(KeyCode.LeftShift))\n","{\n", "speed = 0.2;\n", "}\n", "else {\n", "speed = 0.075;\n", "}\n"])
     masterScript.writelines(["if (Input.GetKey(KeyCode.W))\n","{\n","transform.position += new Vector3(Convert.ToSingle(Math.Sin(angle)*speed),0f, Convert.ToSingle(Math.Cos(angle)*speed));\n","}\n","if (Input.GetKey(KeyCode.S))\n","{\n","transform.position -= new Vector3(Convert.ToSingle(Math.Sin(angle)*speed),0f, Convert.ToSingle(Math.Cos(angle)*speed));\n","}\n","if (Input.GetKey(KeyCode.A))\n","{\n","transform.position -= new Vector3(Convert.ToSingle(Math.Sin(angle + Math.PI/2)*speed),0f, Convert.ToSingle(Math.Cos(angle + Math.PI/2)*speed));\n","}\n","if (Input.GetKey(KeyCode.D))\n","{\n","transform.position += new Vector3(Convert.ToSingle(Math.Sin(angle + Math.PI/2)*speed),0f, Convert.ToSingle(Math.Cos(angle + Math.PI/2)*speed));\n","}\n","if (frameCount < " + str(len(script)) + ")\n","{\n","frames[frameCount].visualize();\n","frameCount++;\n","}\n","}\n","}\n"]) 
     masterScript.close()

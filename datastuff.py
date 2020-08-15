@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import copy
 import hunger as h
 
-def linearRunGraph(filename, param, n_steps, cautiousFile=None):
+def linearRunGraph(filename, param, n_steps, x_label, title, cautiousFile=None):
+    print("inside linearRunGraph")
     labelsize = 18
     legendsize = 14
     titlesize = 20
@@ -14,7 +15,7 @@ def linearRunGraph(filename, param, n_steps, cautiousFile=None):
 
     data = pd.read_csv(filename)
     plt.style.use('ggplot')
-    plt.rc('text', usetex=True)
+    plt.rc('text') #usetex=True)
     plt.rc('font', family='serif')
         
     df0 = hd.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True]])
@@ -40,6 +41,7 @@ def linearRunGraph(filename, param, n_steps, cautiousFile=None):
         survival = []
         up_ci = []
         low_ci = []
+        print("df.columns is", df.columns)
 
         for val, group in df.groupby(param):
             groupLifeTimes = []
@@ -64,11 +66,11 @@ def linearRunGraph(filename, param, n_steps, cautiousFile=None):
     
     ax = fig.gca()
     ax.set(ylim=(0, 10000))
-    ax.set_ylabel(r"prey lifespan (time steps)", fontsize=labelsize, fontweight='bold')
-    ax.set_xlabel(r"ppr", fontsize=labelsize, fontweight='bold')
+    ax.set_ylabel(r"prey lifespan (time steps)", fontsize=labelsize)
+    ax.set_xlabel(r"" + x_label, fontsize=labelsize)
     ax.tick_params(axis='both', which='major', labelsize=ticksize, direction='in')
     plt.legend(prop={"size":legendsize})
-    plt.title(r"ppr " + str(n_steps), fontsize=titlesize, fontweight='bold')
+    plt.title(r"" + title, fontsize=titlesize)
     fig.tight_layout()
     fig.savefig(param + str(n_steps), bbox_inches='tight', pad_inches=0)
     plt.close('all')
@@ -173,10 +175,10 @@ def getCautiousSeedData(filename, newfilename, param):
 #linearRunGraph("cpreysd.csv", "preySightDistance", 10000, cautiousFile="cpysd.csv")
 #linearRunGraph("cpredsd.csv", "predSightDistance", 10000, cautiousFile="cpdsd.csv")
 #linearRunGraph("cpredsa.csv", "predSightAngle", 10000, cautiousFile="cpdsa.csv")
-linearRunGraph("cppratio.csv", "preyPredRatio", 4000, cautiousFile="cppr.csv")
+#linearRunGraph("cppratio.csv", "preyPredRatio", 4000, cautiousFile="cppr.csv")
 #linearRunGraph("cspdfrac.csv", "speedFrac", 10000, cautiousFile="cspd.csv")
 #hungerGraph("cpredsa.csv", "cpdsa.csv")
 
-for steps in range(1000, 10000+1, 1000):
-    linearRunGraph("cppratio.csv", "preyPredRatio", steps, cautiousFile="cppr.csv")
-    print(steps, "done")
+#for steps in range(1000, 10000+1, 1000):
+    #linearRunGraph("cppratio.csv", "preyPredRatio", steps, cautiousFile="cppr.csv")
+    #print(steps, "done")

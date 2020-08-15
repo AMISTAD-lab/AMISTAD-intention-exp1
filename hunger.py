@@ -480,4 +480,4 @@ def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
 
 #genNewStackPlotvsTimeGraph("results/preyPredRatio3.csv", 2000, filterList=[["preyPredRatio", 4]], includeCaution=True)
 
-genNewStackPlotvsTimeGraph("cpredsa.csv", 2000, filterList=[["predSightAngle", 90]], cfilename="cpdsa.csv")
+#genNewStackPlotvsTimeGraph("cpredsa.csv", 2000, filterList=[["predSightAngle", 90]], cfilename="cpdsa.csv")

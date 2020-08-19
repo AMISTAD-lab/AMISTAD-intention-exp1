@@ -50,7 +50,7 @@ def avgFoodPerPrey(filename, paramVary):
         for param, dataframe in df.groupby(paramVary):
             paramList.append(param)
             preyList = dataframe["foodPerPrey"]
-            superTotal = 0 #
+            superTotal = 0
             superEatPrey = 0
             for run in dataframe.index:
                 foodPerPreyList = ast.literal_eval(preyList[run])
@@ -119,7 +119,7 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
             varied parameters. eg. [["predSightDistance", 10]]"""
     modes, dfs = getPerceptionTierDataframes(filename)
 
-    plt.rc('font', family='serif') # set up subplot thing
+    plt.rc('font', family='serif')
     fig, axes = plt.subplots(1,3 )
     fig.tight_layout(w_pad=1, h_pad=1, rect=[0,0,.9, .9])
     fig.suptitle("Prey Status over Time", fontsize=16)
@@ -146,21 +146,20 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
         # x-list is timestep
         x_list = range(maxX)
 
-        # make graph.
         axs[perceptionNum].set_title(modes[perceptionNum], fontsize=12)        
-        axs[perceptionNum].set_ylabel("" + "Average Number of Prey", fontsize=10) # the "r" is for latex
+        axs[perceptionNum].set_ylabel("" + "Average Number of Prey", fontsize=10)
         axs[perceptionNum].set_xlabel("" + "Timestep of Simulation", fontsize=10)
         axs[perceptionNum].tick_params(axis='both', which='major', labelsize=9, direction='in')
         axs[perceptionNum].set(ylim=(0, 20), xlim=(0, maxX))
 
-        plt.sca(axs[perceptionNum]) # set the axis
+        plt.sca(axs[perceptionNum])
         yList1 = extendList(graphInfo[perceptionNum][0][:maxX], maxX)
         yList2 = extendList(graphInfo[perceptionNum][1][:maxX], maxX)
         yList3 = extendList(graphInfo[perceptionNum][2][:maxX], maxX)
         
         plt.stackplot(x_list, yList1, yList2, yList3, colors=colorList)    
     fig.legend(labels=["Alive", "Starved", "Eaten"])
-    #plt.rc('text', usetex=True) # uncomment to use latex
+    plt.rc('text', usetex=True)
     plt.show()
 
 def getPerceptionDataframesCaution(filename, cfilename):
@@ -168,10 +167,10 @@ def getPerceptionDataframesCaution(filename, cfilename):
     Inputs:
         filename: the filename to read from"""
     data = pd.read_csv(filename)
-    df0 = ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True]])#, ["cautious", False]])
-    df1 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", True]])#, ["cautious", False]])
-    df2 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", False]])#, ["cautious", False]])
-    df3 = pd.read_csv(cfilename)#ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True], ["cautious", True]]) # the cautious mode
+    df0 = ds.filterDataFrame(data, [["targetedAware", True], ["proximityAware", True]])
+    df1 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", True]])
+    df2 = ds.filterDataFrame(data, [["targetedAware", False], ["proximityAware", False]])
+    df3 = pd.read_csv(cfilename)
 
     dfs = [df0, df1, df2, df3]
     modes = [r"Proximity + Attention", r"Proximity Only", r"Unaware", r"Cautious"]
@@ -231,9 +230,8 @@ def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None, cfilename
         # x-list is timestep
         x_list = range(maxX)
 
-        # make graph.
         axs.set_title("" + modes[perceptionNum], fontsize=titlesize, fontweight='bold')        
-        axs.set_ylabel("" + "Average Number of Prey", fontsize=labelsize, fontweight='bold') # the "r" is for latex
+        axs.set_ylabel("" + "Average Number of Prey", fontsize=labelsize, fontweight='bold')
         axs.set_xlabel("" + "Timestep of Simulation", fontsize=labelsize, fontweight='bold')
         axs.tick_params(axis='both', which='major', labelsize=ticksize, direction='in')
         axs.set(ylim=(0, 20), xlim=(0, maxX))
@@ -314,8 +312,6 @@ def equalizeListLengths(listIn, listType, maxLength=None):
         listType: String, the type of list we are equalizing"""
     if maxLength == None:
         maxLength = max(map(len, listIn)) 
-    #if maxLength != 10000:
-        #print("uh oh maxLength is ", maxLength)
     for index in range(len(listIn)):
         # check if it meets the max length, otherwise add values to end.
         lengthDiff = maxLength - len(listIn[index])
@@ -350,11 +346,12 @@ def getNewPreyCountOverTimeList(foodPerPreyList, preyCountOverTimeList, preyPerP
             preyEatenTimeStep, preyEatenTimestamps = getPreyEatenTimeStep(preyEatenTimestamps, preyCountOverTimeList)
             preyCountOverTimeList, preyStarvedOverTimeList = revisePreyCountList(preyCountOverTimeList, preyStarvedOverTimeList, numTimeStep, preyEatenTimeStep)
         else:
-            isPreyStarved = False  # initialize variables to be used in loop
+            # initialize variables to be used in loop
+            isPreyStarved = False
             timeStepIndex = 0
-            prevEatTimeStep = 0 # Initialize this 0. (if the prey starts out by not eating anything, it will not be ok.)
+            prevEatTimeStep = 0
 
-            # loop through each time step for a given prey (until prey dies of hunger :( )
+            # loop through each time step for a given prey
             while (timeStepIndex < len(preyFoodList) and not isPreyStarved):
                 currentTimeStep = preyFoodList[timeStepIndex][0]
                 isPreyStarved = (currentTimeStep - prevEatTimeStep) > numTimeStep
@@ -419,7 +416,7 @@ def getEatenStarvedRatio(dataframe, numTimeStep):
     preyCountOverTimeList = dataframe["preyCountOverTime"]
     preyPerPredList = dataframe["preyPerPred"]
 
-    totalPreyStarved = 0 # totals
+    totalPreyStarved = 0
     totalPreyDied = 0
 
     # loop through each run
@@ -445,7 +442,7 @@ def genEatenStarvedRatioGraph(filename, numTimeStep, paramIn=None):
     # get 3 dataframes split based on perception
     modes, dfs = getPerceptionTierDataframes(filename) 
     # If given a parameter, filter all dataframes into different dataframes based on parameter.
-        # Otherwise, simply calculate ratios on the different perception dataframes
+    # Otherwise, simply calculate ratios on the different perception dataframes
     if paramIn != None:
         allParamList = [] # lists to use for graph
         allRatioList = []
@@ -465,7 +462,7 @@ def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
     """ Testing method
     filename: String, the file name of the csv to read from
     numTimeStep: Int, the number of steps at which we consider prey to be starved"""
-    col_list = ["foodPerPrey", "preyCountOverTime", "preyPerPred"] # get info from dataframe
+    col_list = ["foodPerPrey", "preyCountOverTime", "preyPerPred"]
     df = pd.read_csv(filename, usecols=col_list)
     preyList = df["foodPerPrey"][rowNum]
     preyCountOverTimeList = df["preyCountOverTime"][rowNum]
@@ -473,11 +470,3 @@ def testGetNewPreyCountOverTimeList(filename, rowNum, numTimeStep):
     print("old preyCountOverTimeList is\n", preyCountOverTimeList)
     newPreyCountList, preyStarvedOverTimeList = getNewPreyCountOverTimeList(preyList, preyCountOverTimeList, preyPerPredList, numTimeStep)[0]
     print("new preyCountOverTimeList is\n", newPreyCountList)
-
-#testGetNewPreyCountOverTimeList("spdfrac.csv", 0, 2000)
-#avgFoodPerPrey("spdfrac.csv", paramVary = "speedFrac")
-#genEatenStarvedRatioGraph("predsd.csv", 1000, paramIn="predSightDistance
-
-#genNewStackPlotvsTimeGraph("results/preyPredRatio3.csv", 2000, filterList=[["preyPredRatio", 4]], includeCaution=True)
-
-genNewStackPlotvsTimeGraph("cpredsa.csv", 2000, filterList=[["predSightAngle", 90]], cfilename="cpdsa.csv")

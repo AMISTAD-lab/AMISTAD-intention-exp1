@@ -12,7 +12,7 @@ class Prey(Character):
 
     def __init__(self, objPos):
         super().__init__("prey", mv.prefabToURDF["prey"], objPos, mv.PREY_MAX_STAMINA, mv.PREY_SIZE)
-        self.isEaten = False    # True if predator has eaten this prey, False otherwise
+        self.isEaten = False    # True if a predator has eaten this prey, False otherwise
         self.foodTimeStamps = []
         self.isTargeted = False
         self.targetList = [[],[],[],[],[]]
@@ -41,8 +41,7 @@ class Prey(Character):
 
     def eatFood(self):
         """Overrides Character's eatFood method."""
-        # if a prey is in contact with a food, then eat the food by removing the food and 
-            # incrementing hunger. Use getContactPoints.
+        # if a prey is in contact with a food, then eat the food by removing the food and increment hunger.
         objIDInContactList = super().getContactObjects()
         # if there are objects in contact with this prey, then determine if they are food and if so eat them!
         foodEaten = 0
@@ -91,9 +90,3 @@ class Prey(Character):
                     self.speed = mv.PREY_MAX_SPEED
             else:
                 self.speed = alg.genCharSpeed(yawAndAngleArray, self.objID, mv.PREY_MAX_SPEED, mv.PREY_TIRED_SPEED, self.stamina, mv.PREY_TIRED_STAMINA, mv.PREY_DECISION_CURRENT_SPEED_FACTOR) # pass in this array so method knows
-
-    # def avgTargets(self):
-    # '''
-    # averages for each of the prey targets' attentions
-    # '''
-    # for i in self.targetList:

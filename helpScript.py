@@ -3,8 +3,7 @@ import algorithms as alg
 import math as m
 
 script = [[]]   # list of c# lines
-maxID = [0]     # maximum id of the objects, allows us to 
-                    # create objects first before running other c# code.
+maxID = [0]     # maximum id of the objects, allows us to create objects first before running other c# code.
 
 def write(code):
     """writes a line of code to the indicated script

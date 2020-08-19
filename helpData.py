@@ -29,9 +29,6 @@ def combineCSVs(fileNameToCreate, csvFileNameList):
     resultDf.to_csv(fileNameToCreate, index=False)
     return resultDf, dfList
 
-
-# SCRIPTS SHOULD HAVE A UNIQUE NAME OPTION AND BE APPENDED TO THE DATA DICTIONARY
-
 def allDataToCSV(allData, filename):
     """takes in a data list obtained from simulateManySetups and writes all of the run information into a csv"""
     with open(filename, 'w', newline='') as csvfile:

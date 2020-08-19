@@ -85,7 +85,7 @@ def createExpInputFile(inputToVary, startValue, endValue, stepValue):
                         file.write("preyPredRatio " + str(preyPredRatio) + "\n\n")
                 elif (inputToVary == "speedFrac"):
                     for speedFrac in range(startValue, endValue+1, stepValue):
-                        speedFrac /= 10 #hacky ik
+                        speedFrac /= 10
                         file.write(toWrite)
                         file.write("speedFrac " + str(speedFrac) + "\n\n")
                 else:
@@ -127,7 +127,7 @@ def createCautiousFile(inputToVary, startValue, endValue, stepValue):
                 file.write("preyPredRatio " + str(preyPredRatio) + "\n\n")
         elif (inputToVary == "speedFrac"):
             for speedFrac in range(startValue, endValue+1, stepValue):
-                speedFrac /= 10 #hacky ik
+                speedFrac /= 10
                 file.write(toWrite)
                 file.write("speedFrac " + str(speedFrac) + "\n\n")
         else:
@@ -158,19 +158,12 @@ def createSimInputHelper(file, variableTupleListIn, toWrite):
             key: string, the key 
     toWrite: the string to write to the file at this stage in the recursion
     """
-    # Base Case: if no more variables left, simply print blank line
     if not variableTupleListIn:
         file.write(toWrite + "\n")
-        
-    # Recursive Case: loop through all values in range for this variable.
-    # for each possible value, return value plus recursive call.
     else:
-        # remove first variableTuple in list and return it
         variableTuple = variableTupleListIn.pop(0) 
         key = variableTuple[0]
         values = variableTuple[1]
-        #if only one element, just write it and move on. Otherwise, loop through and write
-            # it should be [min, max, step]
         if len(values) == 1:
             toWrite += (str(key) + " " + str(values[0]) + "\n")
             createSimInputHelper(file, variableTupleListIn, toWrite)
@@ -186,7 +179,7 @@ def createSeedListFromFile(filename):
     lineList = seedFile.readlines()
     seedFile.close()
     lineList = [x.strip("\n") for x in lineList]
-    lineList = lineList[:-1] # crop out extra line in file (hacky ik)
+    lineList = lineList[:-1]
 
     standardSeed = {
         "targetedAware" : True,
@@ -223,7 +216,6 @@ def simulateManySetups(numSimulations, maxSteps, shouldMakeScript, seedList):
     allData = []
     numSeeds = len(seedList)
     for i in range(numSeeds):
-        #print("STARTED SEED", i)
         allData.append(batchSimulate(numSimulations, maxSteps, shouldMakeScript, seedList[i], [True, i, numSeeds]))
     return allData
 
@@ -232,7 +224,6 @@ def batchSimulate(numSimulations, maxSteps, shouldMakeScript, preferences, manyS
     batchData = copy.deepcopy(preferences) # holds runData, as well as averages for each set of parameters
     runsData = [] # holds data dictionaries for runs with a given set of parameters. (greater number of runs = greater precision)
     for i in range(numSimulations):
-        #print("STARTED TRIAL", i)            
         runsData.append(simulate(maxSteps, shouldMakeScript, preferences))
         if manySetups[0]:
             printProgressBar((i+1) + (manySetups[1] * numSimulations), numSimulations * manySetups[2])
@@ -319,14 +310,12 @@ def endSimulation(shouldMakeScript):
         targetCounts.append(prey.targetList)
     for predator in predatorList:
         data["preyPerPred"].append(predator.preyTimeStamps)
-    #print("SIMULATION COMPLETE (" + str(frameCount) + " steps)")
     data["stepCount"] = frameCount
     data["survivingPrey"] = len(preyList)
     data["targetInfo"] = calcTargetInfo()
     if shouldMakeScript:
         data["scriptList"] = copy.deepcopy(hsc.script)
         hsc.makeScript()
-        #print("SCRIPT GENERATED")
 
 def nextStep():
     """carries out the next step in the simulation and info to unity code
@@ -441,18 +430,3 @@ def calcTargetInfo():
         probTargetInfo.append(p)
         durationInfo += preyTargetInfo
     return [probTargetInfo, durationInfo]
-
-
-'''
-    fancy measurement thing??? yahhhh
-    so
-    it could be [[] [] [] ... (however many predators, which is always 5)]
-    in each nested list, we store the times at which it was targeted
-    end goal is how long is a prey targeted for and how often
-
-    this method creates information about when a prey is targeted
-    from that, we can look at how many steps it was targeted for
-    and how many times it was targeted
-
-    but this is slightly tricky when prey are targeted by multiple predators
-    because one might start/stop targeting and we need to make sure we have the correct lengths and times'''

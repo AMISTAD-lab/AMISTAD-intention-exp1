@@ -13,8 +13,6 @@ import algorithms as alg
 
 class Character(metaclass = ABCMeta):
 
-    # speed, rotation, stamina, hunger, objID are fields created in init method
-
     """Creates a new character object using the create() method in helpSimulate."""
     @abstractmethod
     def __init__(self, prefab, filename, objPos, stamina, size=1):

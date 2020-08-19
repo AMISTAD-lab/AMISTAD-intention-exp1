@@ -66,7 +66,7 @@ def calcAngleTo(pos1, pos2):
         double, angle from pos1 to pos2 in degrees. Range: 0 to 360, inclusive.
         0 is angle defined by the ray going from [0, 0, 0] to [1, 0, 0].
     """
-    # if x coords are same, make sure we dont divide by 0!!!!!!
+    # if x coords are same, make sure we dont divide by 0
     if pos2[0] - pos1[0] == 0:
         if pos2[1] - pos1[1] > 0:
             return 90.0

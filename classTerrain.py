@@ -10,7 +10,7 @@ class Terrain:
         uHor = 0
         ver = p.getQuaternionFromEuler([0,0,math.radians(90)])
         hor = p.getQuaternionFromEuler([0,0,0])
-        self.pos = [0,0,0] #shouldn't really be used anywhere
+        self.pos = [0,0,0]
 
         #make floor
         self.floor = p.loadURDF(mv.prefabToURDF["plane"], [0,0,0], hor, useFixedBase=1, globalScaling=size/200)

@@ -1,7 +1,6 @@
 from algorithms import randSpawnPos
 from helpData import loadCautiousDict
 
-#change prefabs in script (if wanted), no longer drag&link
 prefabToURDF = {
     "predator" : "sphere2.urdf",
     "prey" : "sphere2.urdf",
@@ -62,16 +61,11 @@ STD_DEV_CIRCLE = FULL_CIRCLE/6.0
 PREY_DECISION_FOOD_FACTOR = 1.5
 PREY_DECISION_CURRENT_SPEED_FACTOR = 0.5 # this one must be in range [0, 1]. Used in genCharSpeed
 
-PREY_DECISION_BIN_NUM = 12# math.ceil(FULL_CIRCLE * 0.5/PREY_DECISION_CURRENT_YAW_STD) # number of bins to use in estimation. larger means more accurate, but longer run time
+PREY_DECISION_BIN_NUM = 12 # number of bins to use in estimation. larger means more accurate, but longer run time
 
-PREDATOR_DECISION_BIN_NUM = 12 #math.ceil(FULL_CIRCLE * 0.5/PREDATOR_DECISION_CURRENT_YAW_STD)
+PREDATOR_DECISION_BIN_NUM = 12
 
 TERRAIN_CENTER = [0, 0, 0] # center point of terrain. Used to attract pred/prey to center
-
-TERRAIN_GROUP = 0x01 # group number is like an identifier
-PREDATOR_GROUP = 0x02 
-PREY_GROUP = 0x04
-FOOD_GROUP = 0x08
 
 PREY_DECISION_CENTER_FACTOR = 5
 
@@ -84,6 +78,12 @@ PREY_DECISION_TARGETED_BY_PRED_FACTOR = 6
 PREDATOR_DECISION_CURRENT_YAW_FACTOR = 30
 PREDATOR_DECISION_CENTER_FACTOR = 20  
 PREDATOR_DECISION_CURRENT_SPEED_FACTOR = 0.5
+
+# group number is like an identifier
+TERRAIN_GROUP = 0x01
+PREDATOR_GROUP = 0x02 
+PREY_GROUP = 0x04
+FOOD_GROUP = 0x08
 
 # 1's correspond to groups that COLLIDE with this object. 0's correspond to groups that DO NOT COLLIDE
 TERRAIN_MASK = PREDATOR_GROUP | PREY_GROUP | FOOD_GROUP # collide with everything except other terrain
@@ -109,7 +109,7 @@ TIMER_DISTRIBUTION = []
 
 TERRAIN_SIZE = 250 #side length of square
 # ---note: See reassignments!!!! these values are NOT the ending values for these vars! 
-TERRAIN_DIAMETER = TERRAIN_SIZE * 0.6 #percentage of terrainSize subject to change
+TERRAIN_DIAMETER = TERRAIN_SIZE * 0.6 #percentage of terrain we want reasonably accessible
 TERRAIN_RADIUS = TERRAIN_DIAMETER / 2.0 
 CHASE_RADIUS = TERRAIN_RADIUS * 0.7 #border of predator chasing prey
 SPAWN_RADIUS = CHASE_RADIUS * 0.7

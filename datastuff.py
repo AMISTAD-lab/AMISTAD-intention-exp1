@@ -168,15 +168,3 @@ def getCautiousSeedData(filename, newfilename, param):
         writer.writerow(["keys", "values"])
         for key, value in paramDict.items():
             writer.writerow([key, value])
-
-
-#linearRunGraph("cpreysd.csv", "preySightDistance", 10000, cautiousFile="cpysd.csv")
-#linearRunGraph("cpredsd.csv", "predSightDistance", 10000, cautiousFile="cpdsd.csv")
-#linearRunGraph("cpredsa.csv", "predSightAngle", 10000, cautiousFile="cpdsa.csv")
-linearRunGraph("cppratio.csv", "preyPredRatio", 4000, cautiousFile="cppr.csv")
-#linearRunGraph("cspdfrac.csv", "speedFrac", 10000, cautiousFile="cspd.csv")
-#hungerGraph("cpredsa.csv", "cpdsa.csv")
-
-for steps in range(1000, 10000+1, 1000):
-    linearRunGraph("cppratio.csv", "preyPredRatio", steps, cautiousFile="cppr.csv")
-    print(steps, "done")

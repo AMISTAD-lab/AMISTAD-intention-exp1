@@ -1,3 +1,3 @@
 # AMISTAD-exp1
 
-All the code for our very very cool project :)
+The code and data for our first experiment investigating the survival advantages of intention perception: The Predator's Purpose.

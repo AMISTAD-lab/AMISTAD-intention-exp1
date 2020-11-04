@@ -6,6 +6,8 @@ import numpy as np
 import statistics as stats
 import math as m
 import copy
+import ast
+from KDEpy import FFTKDE
 
 def filterDataFrame(data, filterlist):
     data = copy.deepcopy(data)
@@ -171,3 +173,16 @@ def avgTargetInfo(targetInfo, graph=False):
         plt.ylabel("Count")
         plt.show()
     return s_avg, s_ci, d_avg, d_ci
+
+def loadCautiousDict(filename):
+    data = pd.read_csv(filename)
+    paramDict = data.set_index('keys').T.to_dict('list')
+    
+    for key, value in paramDict.items():
+        prob, length = ast.literal_eval(value[0])
+        if len(length) > 200:
+            kde = FFTKDE(kernel='gaussian', bw='ISJ').fit(length)
+            kde.evaluate()
+            paramDict[key] = prob, kde.bw, length
+
+    return paramDict

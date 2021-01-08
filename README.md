@@ -1,3 +1,4 @@
-# AMISTAD-exp1
+# Source Code for "The Predator's Purpose" by Maina-Kilaas et al.
 
-The code and data for our first experiment investigating the survival advantages of intention perception: The Predator's Purpose
+The code and data for paper investigating the survival advantages of intention perception: The Predator's Purpose. Supported in part by the National
+Science Foundation under Grant No. 1950885.

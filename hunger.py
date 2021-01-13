@@ -147,8 +147,8 @@ def genStackPlotvsTimeGraph(filename, numTimeStep, filterList=None):
         x_list = range(maxX)
 
         axs[perceptionNum].set_title(modes[perceptionNum], fontsize=12)        
-        axs[perceptionNum].set_ylabel("" + "Average Number of Prey", fontsize=10)
-        axs[perceptionNum].set_xlabel("" + "Timestep of Simulation", fontsize=10)
+        axs[perceptionNum].set_ylabel("Average Number of Prey", fontsize=10)
+        axs[perceptionNum].set_xlabel("Timestep of Simulation", fontsize=10)
         axs[perceptionNum].tick_params(axis='both', which='major', labelsize=9, direction='in')
         axs[perceptionNum].set(ylim=(0, 20), xlim=(0, maxX))
 
@@ -242,7 +242,7 @@ def genNewStackPlotvsTimeGraph(filename, numTimeStep, filterList=None, cfilename
         plt.stackplot(x_list, yList1, yList2, yList3, colors=colorList) 
         plt.legend(labels=["Alive", "Starved", "Eaten"], prop={"size":legendsize})
         fig.tight_layout()
-        fig.savefig("hungerstack" + str(perceptionNum), bbox_inches='tight', pad_inches=0)
+        fig.savefig("hungerstack" + str(perceptionNum) + '.pdf', bbox_inches='tight', pad_inches=0)
     plt.close('all')
 
 def calcMaxX(graphInfo):

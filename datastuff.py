@@ -3,8 +3,15 @@ import pandas as pd
 import ast
 import csv
 import matplotlib.pyplot as plt
-import copy
 import hunger as h
+
+labels = {
+    'preyPredRatio':['Prey-Predator Ratio', 'prey-predator ratio (prey/pred)'],
+    'preySightDistance':['Prey Sight Distance', 'prey sight distance'],
+    'predSightDistance':['Predator Sight Distance', 'predator sight distance'],
+    'predSightAngle':['Predator Sight Angle', 'predator sight angle (degrees)'],
+    'speedFrac':['Speed Fraction', 'speed fraction (prey/pred)'],
+}
 
 def linearRunGraph(filename, param, n_steps, cautiousFile=None):
     labelsize = 18
@@ -43,15 +50,15 @@ def linearRunGraph(filename, param, n_steps, cautiousFile=None):
 
         for val, group in df.groupby(param):
             groupLifeTimes = []
-            for index, run in group.iterrows():
+            for _, run in group.iterrows():
                 counts = run["preyCountOverTime"]
                 foodPerPrey = run["foodPerPrey"]
                 preyPerPred = run["preyPerPred"]
-                revisedCounts, preyStarved = h.getNewPreyCountOverTimeList(foodPerPrey, counts, preyPerPred, n_steps)
+                revisedCounts, _ = h.getNewPreyCountOverTimeList(foodPerPrey, counts, preyPerPred, n_steps)
                 lifetimes = hd.lifeTimes(revisedCounts)
                 groupLifeTimes += lifetimes
             
-            avg, std, ci = hd.listStats(groupLifeTimes)
+            avg, _, ci = hd.listStats(groupLifeTimes)
 
             paramValues.append(val)
             survival.append(avg)
@@ -62,15 +69,16 @@ def linearRunGraph(filename, param, n_steps, cautiousFile=None):
         plt.plot(paramValues, survival, label=modes[i], color=color, linewidth=2)
         plt.fill_between(paramValues, low_ci, up_ci, color=color, alpha=.15)
     
+    global labels
     ax = fig.gca()
     ax.set(ylim=(0, 10000))
     ax.set_ylabel(r"prey lifespan (time steps)", fontsize=labelsize, fontweight='bold')
-    ax.set_xlabel(r"ppr", fontsize=labelsize, fontweight='bold')
+    ax.set_xlabel(r""+ labels[param][1], fontsize=labelsize, fontweight='bold')
     ax.tick_params(axis='both', which='major', labelsize=ticksize, direction='in')
     plt.legend(prop={"size":legendsize})
-    plt.title(r"ppr " + str(n_steps), fontsize=titlesize, fontweight='bold')
+    plt.title(r"" + labels[param][0], fontsize=titlesize, fontweight='bold')
     fig.tight_layout()
-    fig.savefig(param + str(n_steps), bbox_inches='tight', pad_inches=0)
+    fig.savefig(param + '.pdf', bbox_inches='tight', pad_inches=0)
     plt.close('all')
 
 
@@ -114,14 +122,14 @@ def hungerGraph(filename, cautiousFile=None):
         for i in range(3 + (cautiousFile != None)):
             df = dfs[i]
             groupLifeTimes = []
-            for index, run in df.iterrows():
+            for _, run in df.iterrows():
                 counts = run["preyCountOverTime"]
                 foodPerPrey = run["foodPerPrey"]
                 preyPerPred = run["preyPerPred"]
-                revisedCounts, preyStarved = h.getNewPreyCountOverTimeList(foodPerPrey, counts, preyPerPred, n_steps)
+                revisedCounts, _ = h.getNewPreyCountOverTimeList(foodPerPrey, counts, preyPerPred, n_steps)
                 lifetimes = hd.lifeTimes(revisedCounts)
                 groupLifeTimes += lifetimes
-            avg, std, ci = hd.listStats(groupLifeTimes)
+            avg, _, ci = hd.listStats(groupLifeTimes)
             all_lists[i].append([avg, ci[0], ci[1]])
 
     for i in range(len(all_lists)):
@@ -146,7 +154,7 @@ def hungerGraph(filename, cautiousFile=None):
     ax.tick_params(axis='both', which='major', labelsize=ticksize, direction='in')
     plt.legend(prop={"size":legendsize})
     plt.title(r"Maximum Fasting Interval", fontsize=titlesize, fontweight='bold')
-    fig.savefig("hunger", bbox_inches='tight', pad_inches=0)
+    fig.savefig("hunger.pdf", bbox_inches='tight', pad_inches=0)
     plt.close('all')
 
 def getCautiousSeedData(filename, newfilename, param):
@@ -156,14 +164,13 @@ def getCautiousSeedData(filename, newfilename, param):
     for val, group in df.groupby(param):
         groupProbs = []
         groupLengths = []
-        for i, run in group.iterrows():
+        for _, run in group.iterrows():
             probs, lengths = ast.literal_eval(run["targetInfo"])
             groupProbs += probs
             groupLengths += lengths
-        avg, std, ci = hd.listStats(groupProbs)
+        avg, _, _ = hd.listStats(groupProbs)
         paramDict[str(val)] = [avg, groupLengths]
     with open(newfilename, 'w', newline='') as csvfile:
-        fieldnames = ["val", "hist"]
         writer = csv.writer(csvfile)
         writer.writerow(["keys", "values"])
         for key, value in paramDict.items():

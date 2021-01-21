@@ -10,7 +10,7 @@ labels = {
     'preySightDistance':['Prey Sight Distance', 'prey sight distance'],
     'predSightDistance':['Predator Sight Distance', 'predator sight distance'],
     'predSightAngle':['Predator Sight Angle', 'predator sight angle (degrees)'],
-    'speedFrac':['Speed Fraction', 'speed fraction (prey/pred)'],
+    'speedFrac':['Speed Fraction', 'speed fraction (pred/prey)'],
 }
 
 def linearRunGraph(filename, param, n_steps, cautiousFile=None):
